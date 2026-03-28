@@ -11,6 +11,7 @@ struct MainTabView: View {
 
     var body: some View {
         TabView {
+            // TODO: Replace with a dedicated ActiveRunSelectionView or run-start flow
             DiscoveryMapView(viewModel: discoveryVM)
                 .tabItem {
                     Label("Run", systemImage: "figure.water.fitness")
@@ -21,6 +22,7 @@ struct MainTabView: View {
                     Label("Discover", systemImage: "map.fill")
                 }
 
+            // TODO: Replace with a dedicated RunHistoryView / run log list
             CommunityFeedView(viewModel: socialVM)
                 .tabItem {
                     Label("Log", systemImage: "list.bullet.clipboard")

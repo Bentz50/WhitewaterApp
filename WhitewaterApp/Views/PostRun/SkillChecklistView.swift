@@ -8,15 +8,7 @@ struct SkillChecklistView: View {
     @Environment(\.dismiss) private var dismiss
 
     private var groupedSkills: [(SkillCategory, [Skill])] {
-        let allSkills: [Skill]
-        do {
-            // Gather all skills from default set + any extra loaded into viewModel
-            allSkills = viewModel.selectedSkills
-        }
-        _ = allSkills
-        // Load all available skills from the API or fall back to selectedSkills
-        // For display, we show selectedSkills grouped by category
-        return Dictionary(grouping: viewModel.selectedSkills, by: \.category)
+        Dictionary(grouping: viewModel.selectedSkills, by: \.category)
             .sorted { $0.key.rawValue < $1.key.rawValue }
     }
 
