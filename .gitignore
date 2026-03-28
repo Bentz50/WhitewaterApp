@@ -1,0 +1,30 @@
+# Xcode
+*.xcworkspace/xcuserdata/
+DerivedData/
+*.moved-aside
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xccheckout
+*.xcscmblueprint
+build/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+Pods/
+.build/
+
+# PHP / Composer
+vendor/
+.env
+*.log
+uploads/
+cache/
+certs/
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp

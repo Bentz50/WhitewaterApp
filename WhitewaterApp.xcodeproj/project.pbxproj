@@ -1,0 +1,707 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A1000001000001000000001 /* WhitewaterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000001000001000000001 /* WhitewaterApp.swift */; };
+		A1000002000001000000001 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000002000001000000001 /* AppDelegate.swift */; };
+		A1000003000001000000001 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000003000001000000001 /* User.swift */; };
+		A1000004000001000000001 /* Vessel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000004000001000000001 /* Vessel.swift */; };
+		A1000005000001000000001 /* River.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000005000001000000001 /* River.swift */; };
+		A1000006000001000000001 /* RunLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000006000001000000001 /* RunLog.swift */; };
+		A1000007000001000000001 /* GaugeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000007000001000000001 /* GaugeData.swift */; };
+		A1000008000001000000001 /* Hazard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000008000001000000001 /* Hazard.swift */; };
+		A1000009000001000000001 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000009000001000000001 /* Event.swift */; };
+		A1000010000001000000001 /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000010000001000000001 /* Achievement.swift */; };
+		A1000011000001000000001 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000011000001000000001 /* Message.swift */; };
+		A1000012000001000000001 /* Skill.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000012000001000000001 /* Skill.swift */; };
+		A1000013000001000000001 /* MediaItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000013000001000000001 /* MediaItem.swift */; };
+		A1000014000001000000001 /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000014000001000000001 /* APIService.swift */; };
+		A1000015000001000000001 /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000015000001000000001 /* AuthService.swift */; };
+		A1000016000001000000001 /* GaugeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000016000001000000001 /* GaugeService.swift */; };
+		A1000017000001000000001 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000017000001000000001 /* LocationService.swift */; };
+		A1000018000001000000001 /* OfflineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000018000001000000001 /* OfflineManager.swift */; };
+		A1000019000001000000001 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000019000001000000001 /* NotificationService.swift */; };
+		A1000020000001000000001 /* MediaService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000020000001000000001 /* MediaService.swift */; };
+		A1000021000001000000001 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000021000001000000001 /* ProfileViewModel.swift */; };
+		A1000022000001000000001 /* RiverRunViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000022000001000000001 /* RiverRunViewModel.swift */; };
+		A1000023000001000000001 /* PostRunViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000023000001000000001 /* PostRunViewModel.swift */; };
+		A1000024000001000000001 /* DiscoveryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000024000001000000001 /* DiscoveryViewModel.swift */; };
+		A1000025000001000000001 /* SocialViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000025000001000000001 /* SocialViewModel.swift */; };
+		A1000026000001000000001 /* AchievementsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000026000001000000001 /* AchievementsViewModel.swift */; };
+		A1000027000001000000001 /* EventsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000027000001000000001 /* EventsViewModel.swift */; };
+		A1000028000001000000001 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000028000001000000001 /* MainTabView.swift */; };
+		A1000029000001000000001 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000029000001000000001 /* LoginView.swift */; };
+		A1000030000001000000001 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000030000001000000001 /* RegisterView.swift */; };
+		A1000031000001000000001 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000031000001000000001 /* OnboardingView.swift */; };
+		A1000032000001000000001 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000032000001000000001 /* ProfileView.swift */; };
+		A1000033000001000000001 /* VesselManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000033000001000000001 /* VesselManagementView.swift */; };
+		A1000034000001000000001 /* SkillTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000034000001000000001 /* SkillTrackingView.swift */; };
+		A1000035000001000000001 /* CrewListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000035000001000000001 /* CrewListView.swift */; };
+		A1000036000001000000001 /* AchievementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000036000001000000001 /* AchievementsView.swift */; };
+		A1000037000001000000001 /* ActiveRunView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000037000001000000001 /* ActiveRunView.swift */; };
+		A1000038000001000000001 /* GaugeDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000038000001000000001 /* GaugeDashboardView.swift */; };
+		A1000039000001000000001 /* HazardOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000039000001000000001 /* HazardOverlayView.swift */; };
+		A1000040000001000000001 /* WeatherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000040000001000000001 /* WeatherView.swift */; };
+		A1000041000001000000001 /* BeaterFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000041000001000000001 /* BeaterFeedView.swift */; };
+		A1000042000001000000001 /* PostRunSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000042000001000000001 /* PostRunSummaryView.swift */; };
+		A1000043000001000000001 /* HazardReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000043000001000000001 /* HazardReportView.swift */; };
+		A1000044000001000000001 /* InjuryReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000044000001000000001 /* InjuryReportView.swift */; };
+		A1000045000001000000001 /* MediaUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000045000001000000001 /* MediaUploadView.swift */; };
+		A1000046000001000000001 /* SkillChecklistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000046000001000000001 /* SkillChecklistView.swift */; };
+		A1000047000001000000001 /* DiscoveryMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000047000001000000001 /* DiscoveryMapView.swift */; };
+		A1000048000001000000001 /* SmartSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000048000001000000001 /* SmartSearchView.swift */; };
+		A1000049000001000000001 /* FeelingLuckyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000049000001000000001 /* FeelingLuckyView.swift */; };
+		A1000050000001000000001 /* RiverDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000050000001000000001 /* RiverDetailView.swift */; };
+		A1000051000001000000001 /* CommunityFeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000051000001000000001 /* CommunityFeedView.swift */; };
+		A1000052000001000000001 /* DirectMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000052000001000000001 /* DirectMessageView.swift */; };
+		A1000053000001000000001 /* CommentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000053000001000000001 /* CommentsView.swift */; };
+		A1000054000001000000001 /* EventCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000054000001000000001 /* EventCalendarView.swift */; };
+		A1000055000001000000001 /* GaugeChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000055000001000000001 /* GaugeChartView.swift */; };
+		A1000056000001000000001 /* HazardIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000056000001000000001 /* HazardIconView.swift */; };
+		A1000057000001000000001 /* AchievementBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000057000001000000001 /* AchievementBadgeView.swift */; };
+		A1000058000001000000001 /* SkillCheckmarkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000058000001000000001 /* SkillCheckmarkView.swift */; };
+		A1000059000001000000001 /* YouTubeLinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000059000001000000001 /* YouTubeLinkView.swift */; };
+		A1000060000001000000001 /* Color+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000060000001000000001 /* Color+Theme.swift */; };
+		A1000061000001000000001 /* Date+Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000061000001000000001 /* Date+Formatting.swift */; };
+		A1000062000001000000001 /* CLLocationCoordinate2D+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000062000001000000001 /* CLLocationCoordinate2D+Extensions.swift */; };
+		A1000063000001000000001 /* APIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000063000001000000001 /* APIConfig.swift */; };
+		A1000064000001000000001 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1000064000001000000001 /* Constants.swift */; };
+		A1000065000001000000001 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B1000065000001000000001 /* Info.plist */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B1000001000001000000001 /* WhitewaterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhitewaterApp.swift; sourceTree = "<group>"; };
+		B1000002000001000000001 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		B1000003000001000000001 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		B1000004000001000000001 /* Vessel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vessel.swift; sourceTree = "<group>"; };
+		B1000005000001000000001 /* River.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = River.swift; sourceTree = "<group>"; };
+		B1000006000001000000001 /* RunLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunLog.swift; sourceTree = "<group>"; };
+		B1000007000001000000001 /* GaugeData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaugeData.swift; sourceTree = "<group>"; };
+		B1000008000001000000001 /* Hazard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hazard.swift; sourceTree = "<group>"; };
+		B1000009000001000000001 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
+		B1000010000001000000001 /* Achievement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Achievement.swift; sourceTree = "<group>"; };
+		B1000011000001000000001 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		B1000012000001000000001 /* Skill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Skill.swift; sourceTree = "<group>"; };
+		B1000013000001000000001 /* MediaItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaItem.swift; sourceTree = "<group>"; };
+		B1000014000001000000001 /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
+		B1000015000001000000001 /* AuthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthService.swift; sourceTree = "<group>"; };
+		B1000016000001000000001 /* GaugeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaugeService.swift; sourceTree = "<group>"; };
+		B1000017000001000000001 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		B1000018000001000000001 /* OfflineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineManager.swift; sourceTree = "<group>"; };
+		B1000019000001000000001 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		B1000020000001000000001 /* MediaService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaService.swift; sourceTree = "<group>"; };
+		B1000021000001000000001 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
+		B1000022000001000000001 /* RiverRunViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiverRunViewModel.swift; sourceTree = "<group>"; };
+		B1000023000001000000001 /* PostRunViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostRunViewModel.swift; sourceTree = "<group>"; };
+		B1000024000001000000001 /* DiscoveryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryViewModel.swift; sourceTree = "<group>"; };
+		B1000025000001000000001 /* SocialViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialViewModel.swift; sourceTree = "<group>"; };
+		B1000026000001000000001 /* AchievementsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementsViewModel.swift; sourceTree = "<group>"; };
+		B1000027000001000000001 /* EventsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsViewModel.swift; sourceTree = "<group>"; };
+		B1000028000001000000001 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		B1000029000001000000001 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		B1000030000001000000001 /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
+		B1000031000001000000001 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		B1000032000001000000001 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		B1000033000001000000001 /* VesselManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VesselManagementView.swift; sourceTree = "<group>"; };
+		B1000034000001000000001 /* SkillTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillTrackingView.swift; sourceTree = "<group>"; };
+		B1000035000001000000001 /* CrewListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrewListView.swift; sourceTree = "<group>"; };
+		B1000036000001000000001 /* AchievementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementsView.swift; sourceTree = "<group>"; };
+		B1000037000001000000001 /* ActiveRunView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveRunView.swift; sourceTree = "<group>"; };
+		B1000038000001000000001 /* GaugeDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaugeDashboardView.swift; sourceTree = "<group>"; };
+		B1000039000001000000001 /* HazardOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HazardOverlayView.swift; sourceTree = "<group>"; };
+		B1000040000001000000001 /* WeatherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherView.swift; sourceTree = "<group>"; };
+		B1000041000001000000001 /* BeaterFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeaterFeedView.swift; sourceTree = "<group>"; };
+		B1000042000001000000001 /* PostRunSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostRunSummaryView.swift; sourceTree = "<group>"; };
+		B1000043000001000000001 /* HazardReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HazardReportView.swift; sourceTree = "<group>"; };
+		B1000044000001000000001 /* InjuryReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InjuryReportView.swift; sourceTree = "<group>"; };
+		B1000045000001000000001 /* MediaUploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaUploadView.swift; sourceTree = "<group>"; };
+		B1000046000001000000001 /* SkillChecklistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillChecklistView.swift; sourceTree = "<group>"; };
+		B1000047000001000000001 /* DiscoveryMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryMapView.swift; sourceTree = "<group>"; };
+		B1000048000001000000001 /* SmartSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartSearchView.swift; sourceTree = "<group>"; };
+		B1000049000001000000001 /* FeelingLuckyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeelingLuckyView.swift; sourceTree = "<group>"; };
+		B1000050000001000000001 /* RiverDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RiverDetailView.swift; sourceTree = "<group>"; };
+		B1000051000001000000001 /* CommunityFeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityFeedView.swift; sourceTree = "<group>"; };
+		B1000052000001000000001 /* DirectMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectMessageView.swift; sourceTree = "<group>"; };
+		B1000053000001000000001 /* CommentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsView.swift; sourceTree = "<group>"; };
+		B1000054000001000000001 /* EventCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventCalendarView.swift; sourceTree = "<group>"; };
+		B1000055000001000000001 /* GaugeChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaugeChartView.swift; sourceTree = "<group>"; };
+		B1000056000001000000001 /* HazardIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HazardIconView.swift; sourceTree = "<group>"; };
+		B1000057000001000000001 /* AchievementBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementBadgeView.swift; sourceTree = "<group>"; };
+		B1000058000001000000001 /* SkillCheckmarkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillCheckmarkView.swift; sourceTree = "<group>"; };
+		B1000059000001000000001 /* YouTubeLinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubeLinkView.swift; sourceTree = "<group>"; };
+		B1000060000001000000001 /* Color+Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Theme.swift"; sourceTree = "<group>"; };
+		B1000061000001000000001 /* Date+Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Formatting.swift"; sourceTree = "<group>"; };
+		B1000062000001000000001 /* CLLocationCoordinate2D+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CLLocationCoordinate2D+Extensions.swift"; sourceTree = "<group>"; };
+		B1000063000001000000001 /* APIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIConfig.swift; sourceTree = "<group>"; };
+		B1000064000001000000001 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		B1000065000001000000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C1000001000001000000001 /* WhitewaterApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WhitewaterApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D1000001000001000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		E1000001000001000000001 /* WhitewaterApp */ = {
+			isa = PBXGroup;
+			children = (
+				E1000002000001000000001 /* App */,
+				E1000003000001000000001 /* Models */,
+				E1000004000001000000001 /* Services */,
+				E1000005000001000000001 /* ViewModels */,
+				E1000006000001000000001 /* Views */,
+				E1000007000001000000001 /* Components */,
+				E1000008000001000000001 /* Extensions */,
+				E1000009000001000000001 /* Config */,
+				E1000010000001000000001 /* Resources */,
+			);
+			path = WhitewaterApp;
+			sourceTree = "<group>";
+		};
+		E1000002000001000000001 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				B1000001000001000000001 /* WhitewaterApp.swift */,
+				B1000002000001000000001 /* AppDelegate.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		E1000003000001000000001 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B1000003000001000000001 /* User.swift */,
+				B1000004000001000000001 /* Vessel.swift */,
+				B1000005000001000000001 /* River.swift */,
+				B1000006000001000000001 /* RunLog.swift */,
+				B1000007000001000000001 /* GaugeData.swift */,
+				B1000008000001000000001 /* Hazard.swift */,
+				B1000009000001000000001 /* Event.swift */,
+				B1000010000001000000001 /* Achievement.swift */,
+				B1000011000001000000001 /* Message.swift */,
+				B1000012000001000000001 /* Skill.swift */,
+				B1000013000001000000001 /* MediaItem.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		E1000004000001000000001 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B1000014000001000000001 /* APIService.swift */,
+				B1000015000001000000001 /* AuthService.swift */,
+				B1000016000001000000001 /* GaugeService.swift */,
+				B1000017000001000000001 /* LocationService.swift */,
+				B1000018000001000000001 /* OfflineManager.swift */,
+				B1000019000001000000001 /* NotificationService.swift */,
+				B1000020000001000000001 /* MediaService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		E1000005000001000000001 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				B1000021000001000000001 /* ProfileViewModel.swift */,
+				B1000022000001000000001 /* RiverRunViewModel.swift */,
+				B1000023000001000000001 /* PostRunViewModel.swift */,
+				B1000024000001000000001 /* DiscoveryViewModel.swift */,
+				B1000025000001000000001 /* SocialViewModel.swift */,
+				B1000026000001000000001 /* AchievementsViewModel.swift */,
+				B1000027000001000000001 /* EventsViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		E1000006000001000000001 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B1000028000001000000001 /* MainTabView.swift */,
+				E1000006010000000000001 /* Auth */,
+				E1000006020000000000001 /* Profile */,
+				E1000006030000000000001 /* RiverRun */,
+				E1000006040000000000001 /* PostRun */,
+				E1000006050000000000001 /* Discovery */,
+				E1000006060000000000001 /* Social */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		E1000006010000000000001 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				B1000029000001000000001 /* LoginView.swift */,
+				B1000030000001000000001 /* RegisterView.swift */,
+				B1000031000001000000001 /* OnboardingView.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		E1000006020000000000001 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				B1000032000001000000001 /* ProfileView.swift */,
+				B1000033000001000000001 /* VesselManagementView.swift */,
+				B1000034000001000000001 /* SkillTrackingView.swift */,
+				B1000035000001000000001 /* CrewListView.swift */,
+				B1000036000001000000001 /* AchievementsView.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		E1000006030000000000001 /* RiverRun */ = {
+			isa = PBXGroup;
+			children = (
+				B1000037000001000000001 /* ActiveRunView.swift */,
+				B1000038000001000000001 /* GaugeDashboardView.swift */,
+				B1000039000001000000001 /* HazardOverlayView.swift */,
+				B1000040000001000000001 /* WeatherView.swift */,
+				B1000041000001000000001 /* BeaterFeedView.swift */,
+			);
+			path = RiverRun;
+			sourceTree = "<group>";
+		};
+		E1000006040000000000001 /* PostRun */ = {
+			isa = PBXGroup;
+			children = (
+				B1000042000001000000001 /* PostRunSummaryView.swift */,
+				B1000043000001000000001 /* HazardReportView.swift */,
+				B1000044000001000000001 /* InjuryReportView.swift */,
+				B1000045000001000000001 /* MediaUploadView.swift */,
+				B1000046000001000000001 /* SkillChecklistView.swift */,
+			);
+			path = PostRun;
+			sourceTree = "<group>";
+		};
+		E1000006050000000000001 /* Discovery */ = {
+			isa = PBXGroup;
+			children = (
+				B1000047000001000000001 /* DiscoveryMapView.swift */,
+				B1000048000001000000001 /* SmartSearchView.swift */,
+				B1000049000001000000001 /* FeelingLuckyView.swift */,
+				B1000050000001000000001 /* RiverDetailView.swift */,
+			);
+			path = Discovery;
+			sourceTree = "<group>";
+		};
+		E1000006060000000000001 /* Social */ = {
+			isa = PBXGroup;
+			children = (
+				B1000051000001000000001 /* CommunityFeedView.swift */,
+				B1000052000001000000001 /* DirectMessageView.swift */,
+				B1000053000001000000001 /* CommentsView.swift */,
+				B1000054000001000000001 /* EventCalendarView.swift */,
+			);
+			path = Social;
+			sourceTree = "<group>";
+		};
+		E1000007000001000000001 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				B1000055000001000000001 /* GaugeChartView.swift */,
+				B1000056000001000000001 /* HazardIconView.swift */,
+				B1000057000001000000001 /* AchievementBadgeView.swift */,
+				B1000058000001000000001 /* SkillCheckmarkView.swift */,
+				B1000059000001000000001 /* YouTubeLinkView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		E1000008000001000000001 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				B1000060000001000000001 /* Color+Theme.swift */,
+				B1000061000001000000001 /* Date+Formatting.swift */,
+				B1000062000001000000001 /* CLLocationCoordinate2D+Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		E1000009000001000000001 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				B1000063000001000000001 /* APIConfig.swift */,
+				B1000064000001000000001 /* Constants.swift */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		E1000010000001000000001 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B1000065000001000000001 /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		F1000001000001000000001 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C1000001000001000000001 /* WhitewaterApp.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F1000000000001000000001 = {
+			isa = PBXGroup;
+			children = (
+				E1000001000001000000001 /* WhitewaterApp */,
+				F1000001000001000000001 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		G1000001000001000000001 /* WhitewaterApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = H1000002000001000000001 /* Build configuration list for PBXNativeTarget "WhitewaterApp" */;
+			buildPhases = (
+				I1000001000001000000001 /* Sources */,
+				D1000001000001000000001 /* Frameworks */,
+				J1000001000001000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WhitewaterApp;
+			productName = WhitewaterApp;
+			productReference = C1000001000001000000001 /* WhitewaterApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		K1000001000001000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				ORGANIZATIONNAME = "BentzTech LLC";
+				TargetAttributes = {
+					G1000001000001000000001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = H1000001000001000000001 /* Build configuration list for PBXProject "WhitewaterApp" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F1000000000001000000001;
+			productRefGroup = F1000001000001000000001 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				G1000001000001000000001 /* WhitewaterApp */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		J1000001000001000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1000065000001000000001 /* Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		I1000001000001000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1000001000001000000001 /* WhitewaterApp.swift in Sources */,
+				A1000002000001000000001 /* AppDelegate.swift in Sources */,
+				A1000003000001000000001 /* User.swift in Sources */,
+				A1000004000001000000001 /* Vessel.swift in Sources */,
+				A1000005000001000000001 /* River.swift in Sources */,
+				A1000006000001000000001 /* RunLog.swift in Sources */,
+				A1000007000001000000001 /* GaugeData.swift in Sources */,
+				A1000008000001000000001 /* Hazard.swift in Sources */,
+				A1000009000001000000001 /* Event.swift in Sources */,
+				A1000010000001000000001 /* Achievement.swift in Sources */,
+				A1000011000001000000001 /* Message.swift in Sources */,
+				A1000012000001000000001 /* Skill.swift in Sources */,
+				A1000013000001000000001 /* MediaItem.swift in Sources */,
+				A1000014000001000000001 /* APIService.swift in Sources */,
+				A1000015000001000000001 /* AuthService.swift in Sources */,
+				A1000016000001000000001 /* GaugeService.swift in Sources */,
+				A1000017000001000000001 /* LocationService.swift in Sources */,
+				A1000018000001000000001 /* OfflineManager.swift in Sources */,
+				A1000019000001000000001 /* NotificationService.swift in Sources */,
+				A1000020000001000000001 /* MediaService.swift in Sources */,
+				A1000021000001000000001 /* ProfileViewModel.swift in Sources */,
+				A1000022000001000000001 /* RiverRunViewModel.swift in Sources */,
+				A1000023000001000000001 /* PostRunViewModel.swift in Sources */,
+				A1000024000001000000001 /* DiscoveryViewModel.swift in Sources */,
+				A1000025000001000000001 /* SocialViewModel.swift in Sources */,
+				A1000026000001000000001 /* AchievementsViewModel.swift in Sources */,
+				A1000027000001000000001 /* EventsViewModel.swift in Sources */,
+				A1000028000001000000001 /* MainTabView.swift in Sources */,
+				A1000029000001000000001 /* LoginView.swift in Sources */,
+				A1000030000001000000001 /* RegisterView.swift in Sources */,
+				A1000031000001000000001 /* OnboardingView.swift in Sources */,
+				A1000032000001000000001 /* ProfileView.swift in Sources */,
+				A1000033000001000000001 /* VesselManagementView.swift in Sources */,
+				A1000034000001000000001 /* SkillTrackingView.swift in Sources */,
+				A1000035000001000000001 /* CrewListView.swift in Sources */,
+				A1000036000001000000001 /* AchievementsView.swift in Sources */,
+				A1000037000001000000001 /* ActiveRunView.swift in Sources */,
+				A1000038000001000000001 /* GaugeDashboardView.swift in Sources */,
+				A1000039000001000000001 /* HazardOverlayView.swift in Sources */,
+				A1000040000001000000001 /* WeatherView.swift in Sources */,
+				A1000041000001000000001 /* BeaterFeedView.swift in Sources */,
+				A1000042000001000000001 /* PostRunSummaryView.swift in Sources */,
+				A1000043000001000000001 /* HazardReportView.swift in Sources */,
+				A1000044000001000000001 /* InjuryReportView.swift in Sources */,
+				A1000045000001000000001 /* MediaUploadView.swift in Sources */,
+				A1000046000001000000001 /* SkillChecklistView.swift in Sources */,
+				A1000047000001000000001 /* DiscoveryMapView.swift in Sources */,
+				A1000048000001000000001 /* SmartSearchView.swift in Sources */,
+				A1000049000001000000001 /* FeelingLuckyView.swift in Sources */,
+				A1000050000001000000001 /* RiverDetailView.swift in Sources */,
+				A1000051000001000000001 /* CommunityFeedView.swift in Sources */,
+				A1000052000001000000001 /* DirectMessageView.swift in Sources */,
+				A1000053000001000000001 /* CommentsView.swift in Sources */,
+				A1000054000001000000001 /* EventCalendarView.swift in Sources */,
+				A1000055000001000000001 /* GaugeChartView.swift in Sources */,
+				A1000056000001000000001 /* HazardIconView.swift in Sources */,
+				A1000057000001000000001 /* AchievementBadgeView.swift in Sources */,
+				A1000058000001000000001 /* SkillCheckmarkView.swift in Sources */,
+				A1000059000001000000001 /* YouTubeLinkView.swift in Sources */,
+				A1000060000001000000001 /* Color+Theme.swift in Sources */,
+				A1000061000001000000001 /* Date+Formatting.swift in Sources */,
+				A1000062000001000000001 /* CLLocationCoordinate2D+Extensions.swift in Sources */,
+				A1000063000001000000001 /* APIConfig.swift in Sources */,
+				A1000064000001000000001 /* Constants.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		H1000003000001000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		H1000004000001000000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		H1000005000001000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = WhitewaterApp/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.bentztech.whitewaterapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = NO;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+			};
+			name = Debug;
+		};
+		H1000006000001000000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = WhitewaterApp/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.bentztech.whitewaterapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = NO;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		H1000001000001000000001 /* Build configuration list for PBXProject "WhitewaterApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				H1000003000001000000001 /* Debug */,
+				H1000004000001000000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		H1000002000001000000001 /* Build configuration list for PBXNativeTarget "WhitewaterApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				H1000005000001000000001 /* Debug */,
+				H1000006000001000000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = K1000001000001000000001 /* Project object */;
+}

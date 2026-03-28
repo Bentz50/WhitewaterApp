@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+
+    <!-- Bundle Identity -->
+    <key>CFBundleIdentifier</key>
+    <string>com.bentztech.whitewaterapp</string>
+    <key>CFBundleDisplayName</key>
+    <string>WhitewaterApp</string>
+    <key>CFBundleName</key>
+    <string>WhitewaterApp</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+
+    <!-- Versioning -->
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+
+    <!-- Deployment -->
+    <key>MinimumOSVersion</key>
+    <string>17.0</string>
+    <key>LSRequiresIPhoneOS</key>
+    <true/>
+
+    <!-- Launch Screen -->
+    <key>UILaunchStoryboardName</key>
+    <string>LaunchScreen</string>
+
+    <!-- Required Device Capabilities -->
+    <key>UIRequiredDeviceCapabilities</key>
+    <array>
+        <string>armv7</string>
+        <string>gps</string>
+    </array>
+
+    <!-- Supported Interface Orientations (iPhone — portrait only) -->
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+    </array>
+
+    <!-- Background Modes -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>location</string>
+        <string>remote-notification</string>
+        <string>fetch</string>
+    </array>
+
+    <!-- Privacy Usage Descriptions -->
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>WhitewaterApp needs location access to track your river runs and alert you to nearby hazards and dam releases.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>WhitewaterApp uses your location to find nearby rivers and show your position on the map.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>WhitewaterApp needs background location to track your run when the screen is off.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>WhitewaterApp uses the camera to capture photos and videos of your runs.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>WhitewaterApp accesses your photo library to upload run photos and videos.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>WhitewaterApp uses the microphone for video recording during runs.</string>
+
+    <!-- App Transport Security -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <false/>
+    </dict>
+
+</dict>
+</plist>
