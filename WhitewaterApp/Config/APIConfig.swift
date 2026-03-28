@@ -14,9 +14,9 @@ enum APIConfig {
     static let jwtStorageKey  = "ww_jwt_token"
     static let userStorageKey = "ww_current_user"
 
-    /// Returns the Authorization header value using the current token from AuthService.
+    /// Returns the Authorization header value using the current token from APIService.
     /// Returns "Bearer " (with empty token) when no token is stored.
     static var authorizationHeader: String {
-        "Bearer \(AuthService.shared.token ?? "")"
+        "Bearer \(APIService.shared.authToken ?? "")"
     }
 }

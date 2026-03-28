@@ -18,9 +18,6 @@ struct WhitewaterApp: App {
                 }
             }
             .environmentObject(authService)
-            .onAppear {
-                Task { await authService.restoreSession() }
-            }
         }
     }
 }

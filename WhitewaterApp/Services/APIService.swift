@@ -3,12 +3,6 @@
 import Foundation
 import Network
 
-// MARK: - Configuration
-
-enum APIConfig {
-    static let baseURL = "https://api.whitewaterapp.com/v1"
-}
-
 // MARK: - Errors
 
 enum WhitewaterError: LocalizedError {
@@ -195,6 +189,23 @@ final class APIService: ObservableObject {
 
     func delete<T: Codable>(_ endpoint: String, responseType: T.Type) async throws -> T {
         try await request(endpoint, method: "DELETE", responseType: responseType)
+    }
+
+    // MARK: - Push Notifications
+
+    func sendPushToken(_ token: String) async {
+        struct Body: Encodable { let deviceToken: String; let platform: String }
+        struct Empty: Codable {}
+        do {
+            _ = try await post(
+                "/users/push-token",
+                body: Body(deviceToken: token, platform: "ios"),
+                responseType: Empty.self
+            )
+        } catch {
+            // Non-fatal: log and continue
+            print("WhitewaterApp: failed to register push token — \(error.localizedDescription)")
+        }
     }
 }
 
