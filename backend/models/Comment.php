@@ -15,13 +15,13 @@ class Comment {
     }
 
     public static function create(PDO $db, array $data): int {
-        $sql = 'INSERT INTO comments (post_id, user_id, body, created_at)
-                VALUES (:post_id, :user_id, :body, NOW())';
+        $sql = 'INSERT INTO comments (post_id, user_id, content, created_at)
+                VALUES (:post_id, :user_id, :content, NOW())';
         $stmt = $db->prepare($sql);
         $stmt->execute([
             ':post_id' => $data['post_id'],
             ':user_id' => $data['user_id'],
-            ':body'    => $data['body'],
+            ':content' => $data['content'],
         ]);
         return (int) $db->lastInsertId();
     }

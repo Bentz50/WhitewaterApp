@@ -4,28 +4,28 @@
 class RunLog {
     public static function create(PDO $db, array $data): int {
         $sql = 'INSERT INTO run_logs
-                    (user_id, river_id, vessel_id, run_date, start_time, end_time,
-                     distance_miles, duration_minutes, avg_speed_mph, is_public,
-                     gauge_reading_cfs, gauge_height_ft, notes, created_at)
+                    (user_id, river_id, vessel_id, start_time, end_time,
+                     distance_miles, duration_seconds, calories_burned, privacy,
+                     start_gauge_level, end_gauge_level, gps_track, notes, created_at)
                 VALUES
-                    (:user_id, :river_id, :vessel_id, :run_date, :start_time, :end_time,
-                     :distance_miles, :duration_minutes, :avg_speed_mph, :is_public,
-                     :gauge_reading_cfs, :gauge_height_ft, :notes, NOW())';
+                    (:user_id, :river_id, :vessel_id, :start_time, :end_time,
+                     :distance_miles, :duration_seconds, :calories_burned, :privacy,
+                     :start_gauge_level, :end_gauge_level, :gps_track, :notes, NOW())';
         $stmt = $db->prepare($sql);
         $stmt->execute([
-            ':user_id'           => $data['user_id'],
-            ':river_id'          => $data['river_id']          ?? null,
-            ':vessel_id'         => $data['vessel_id']         ?? null,
-            ':run_date'          => $data['run_date']          ?? null,
-            ':start_time'        => $data['start_time']        ?? null,
-            ':end_time'          => $data['end_time']          ?? null,
-            ':distance_miles'    => $data['distance_miles']    ?? null,
-            ':duration_minutes'  => $data['duration_minutes']  ?? null,
-            ':avg_speed_mph'     => $data['avg_speed_mph']     ?? null,
-            ':is_public'         => $data['is_public']         ?? 1,
-            ':gauge_reading_cfs' => $data['gauge_reading_cfs'] ?? null,
-            ':gauge_height_ft'   => $data['gauge_height_ft']   ?? null,
-            ':notes'             => $data['notes']             ?? null,
+            ':user_id'            => $data['user_id'],
+            ':river_id'           => $data['river_id']           ?? null,
+            ':vessel_id'          => $data['vessel_id']          ?? null,
+            ':start_time'         => $data['start_time']         ?? null,
+            ':end_time'           => $data['end_time']           ?? null,
+            ':distance_miles'     => $data['distance_miles']     ?? 0,
+            ':duration_seconds'   => $data['duration_seconds']   ?? 0,
+            ':calories_burned'    => $data['calories_burned']    ?? null,
+            ':privacy'            => $data['privacy']            ?? 'public',
+            ':start_gauge_level'  => $data['start_gauge_level']  ?? null,
+            ':end_gauge_level'    => $data['end_gauge_level']    ?? null,
+            ':gps_track'          => isset($data['gps_track']) ? json_encode($data['gps_track']) : null,
+            ':notes'              => $data['notes']              ?? null,
         ]);
         return (int) $db->lastInsertId();
     }
@@ -49,7 +49,7 @@ class RunLog {
             'SELECT rl.*, r.name AS river_name FROM run_logs rl
              LEFT JOIN rivers r ON r.id = rl.river_id
              WHERE rl.user_id = :uid
-             ORDER BY rl.run_date DESC, rl.created_at DESC
+             ORDER BY rl.start_time DESC, rl.created_at DESC
              LIMIT :lim OFFSET :off'
         );
         $stmt->bindValue(':uid', $userId, PDO::PARAM_INT);
@@ -64,8 +64,8 @@ class RunLog {
             'SELECT rl.*, u.username, u.display_name, u.avatar_url
              FROM run_logs rl
              JOIN users u ON u.id = rl.user_id
-             WHERE rl.river_id = :rid AND rl.is_public = 1
-             ORDER BY rl.run_date DESC
+             WHERE rl.river_id = :rid AND rl.privacy = 'public'
+             ORDER BY rl.start_time DESC
              LIMIT :lim'
         );
         $stmt->bindValue(':rid', $riverId, PDO::PARAM_INT);
@@ -75,8 +75,8 @@ class RunLog {
     }
 
     public static function update(PDO $db, int $id, int $userId, array $data): bool {
-        $allowed = ['notes', 'is_public', 'distance_miles', 'duration_minutes', 'avg_speed_mph',
-                    'gauge_reading_cfs', 'gauge_height_ft', 'vessel_id'];
+        $allowed = ['notes', 'privacy', 'distance_miles', 'duration_seconds', 'calories_burned',
+                    'start_gauge_level', 'end_gauge_level', 'vessel_id', 'end_time'];
         $sets   = [];
         $params = [':id' => $id, ':user_id' => $userId];
 
