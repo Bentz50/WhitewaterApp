@@ -28,6 +28,7 @@ class GaugeProxy {
                 $result['site_name'] = $siteName;
             }
 
+            // USGS returns '-999999' as its standard sentinel for missing/unavailable data
             if (!$latest || $latest['value'] === '-999999') {
                 continue;
             }

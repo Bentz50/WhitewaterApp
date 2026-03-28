@@ -30,7 +30,7 @@ class JWT {
         );
 
         if (!hash_equals($expectedSig, $signature)) {
-            return null;
+            return null; // Invalid signature
         }
 
         $payload = json_decode(self::base64url_decode($body), true);
@@ -39,17 +39,37 @@ class JWT {
         }
 
         if (isset($payload['exp']) && $payload['exp'] < time()) {
-            return null;
+            return null; // Token expired
         }
 
         return $payload;
     }
 
     public static function verify(string $token): array {
-        $payload = self::decode($token);
-        if ($payload === null) {
-            throw new RuntimeException('Invalid or expired token');
+        $parts = explode('.', $token);
+        if (count($parts) !== 3) {
+            throw new RuntimeException('Malformed token');
         }
+
+        [$header, $body, $signature] = $parts;
+
+        $expectedSig = self::base64url_encode(
+            hash_hmac('sha256', "$header.$body", JWT_SECRET, true)
+        );
+
+        if (!hash_equals($expectedSig, $signature)) {
+            throw new RuntimeException('Invalid token signature');
+        }
+
+        $payload = json_decode(self::base64url_decode($body), true);
+        if (!is_array($payload)) {
+            throw new RuntimeException('Malformed token payload');
+        }
+
+        if (isset($payload['exp']) && $payload['exp'] < time()) {
+            throw new RuntimeException('Token has expired');
+        }
+
         return $payload;
     }
 
