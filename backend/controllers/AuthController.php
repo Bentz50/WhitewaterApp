@@ -35,7 +35,10 @@ class AuthController {
         if (!empty($claims['email'])) {
             $email = strtolower(trim($claims['email']));
         } elseif (!empty($body['email'])) {
-            $email = strtolower(trim($body['email']));
+            $candidate = strtolower(trim($body['email']));
+            if (Validator::email($candidate)) {
+                $email = $candidate;
+            }
         }
 
         $fullName = $body['full_name'] ?? null;
@@ -304,8 +307,11 @@ class AuthController {
             'RS256' => OPENSSL_ALGO_SHA256,
             'RS384' => OPENSSL_ALGO_SHA384,
             'RS512' => OPENSSL_ALGO_SHA512,
-            default => OPENSSL_ALGO_SHA256,
+            default => null,
         };
+        if ($alg === null) {
+            return null;
+        }
         $valid = openssl_verify($data, $signature, $publicKey, $alg);
         if ($valid !== 1) {
             return null;
