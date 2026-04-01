@@ -1,5 +1,6 @@
 // Copyright © 2026 BentzTech LLC. All rights reserved.
 
+import AuthenticationServices
 import Foundation
 
 @MainActor
@@ -9,6 +10,7 @@ final class AuthService: ObservableObject {
 
     @Published private(set) var currentUser: User?
     @Published private(set) var isAuthenticated = false
+    @Published private(set) var isNewUser = false
 
     private let api = APIService.shared
     private let tokenKey = "authToken"
@@ -46,46 +48,85 @@ final class AuthService: ObservableObject {
         isAuthenticated  = true
     }
 
-    // MARK: - Auth Actions
+    // MARK: - Sign in with Apple
 
-    func login(email: String, password: String) async throws -> User {
-        struct Body: Encodable { let email, password: String }
-        struct Response: Codable { let token: String; let user: User }
-
-        let response = try await api.post(
-            "/auth/login",
-            body: Body(email: email, password: password),
-            responseType: Response.self
-        )
-        persist(token: response.token, user: response.user)
-        return response.user
-    }
-
-    func register(
-        email: String,
-        username: String,
-        password: String,
-        displayName: String
+    func signInWithApple(
+        identityToken: String,
+        authorizationCode: String,
+        fullName: PersonNameComponents?,
+        email: String?
     ) async throws -> User {
-        struct Body: Encodable { let email, username, password, displayName: String }
-        struct Response: Codable { let token: String; let user: User }
+        struct Body: Encodable {
+            let identityToken: String
+            let authorizationCode: String
+            let fullName: FullNameBody?
+            let email: String?
+        }
+        struct FullNameBody: Encodable {
+            let givenName: String?
+            let familyName: String?
+        }
+        struct AuthResponse: Codable {
+            let token: String
+            let user: User
+            let refreshToken: String?
+            let isNewUser: Bool?
+        }
+
+        let nameBody: FullNameBody? = fullName.map {
+            FullNameBody(givenName: $0.givenName, familyName: $0.familyName)
+        }
 
         let response = try await api.post(
-            "/auth/register",
-            body: Body(email: email, username: username, password: password, displayName: displayName),
-            responseType: Response.self
+            "/auth/apple",
+            body: Body(
+                identityToken: identityToken,
+                authorizationCode: authorizationCode,
+                fullName: nameBody,
+                email: email
+            ),
+            responseType: AuthResponse.self
         )
+
+        isNewUser = response.isNewUser ?? false
         persist(token: response.token, user: response.user)
         return response.user
     }
+
+    // MARK: - Sign in with Google
+
+    func signInWithGoogle(idToken: String) async throws -> User {
+        struct Body: Encodable { let idToken: String }
+        struct AuthResponse: Codable {
+            let token: String
+            let user: User
+            let refreshToken: String?
+            let isNewUser: Bool?
+        }
+
+        let response = try await api.post(
+            "/auth/google",
+            body: Body(idToken: idToken),
+            responseType: AuthResponse.self
+        )
+
+        isNewUser = response.isNewUser ?? false
+        persist(token: response.token, user: response.user)
+        return response.user
+    }
+
+    // MARK: - Logout
 
     func logout() {
         api.authToken   = nil
         currentUser     = nil
         isAuthenticated = false
+        isNewUser       = false
         UserDefaults.standard.removeObject(forKey: tokenKey)
         UserDefaults.standard.removeObject(forKey: userKey)
     }
+
+    // MARK: - Token Refresh
 
     func refreshToken() async throws {
         struct Response: Codable { let token: String; let user: User }
@@ -93,14 +134,10 @@ final class AuthService: ObservableObject {
         persist(token: response.token, user: response.user)
     }
 
-    func forgotPassword(email: String) async throws {
-        struct Body: Encodable { let email: String }
-        struct Empty: Codable {}
-        _ = try await api.post(
-            "/auth/forgot-password",
-            body: Body(email: email),
-            responseType: Empty.self
-        )
+    // MARK: - Onboarding complete
+
+    func onboardingComplete() {
+        isNewUser = false
     }
 
     // MARK: - Helpers

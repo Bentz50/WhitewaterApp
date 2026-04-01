@@ -4,10 +4,11 @@ import Foundation
 
 struct User: Codable, Identifiable, Hashable {
     let id: Int
-    let email: String
+    let email: String?
     let username: String
     let displayName: String
     let avatarURL: String?
+    let authProvider: String?
     let preferredDifficulty: [String]
     let waterExperiences: [String]
     let interests: [String]

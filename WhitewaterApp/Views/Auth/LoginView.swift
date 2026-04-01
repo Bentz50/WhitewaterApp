@@ -1,122 +1,143 @@
 // Copyright © 2026 BentzTech LLC. All rights reserved.
 
+import AuthenticationServices
 import SwiftUI
 
 struct LoginView: View {
 
     @EnvironmentObject var authService: AuthService
 
-    @State private var email: String = ""
-    @State private var password: String = ""
+    @StateObject private var googleService = GoogleSignInService()
+
     @State private var isLoading: Bool = false
     @State private var errorMessage: String?
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 24) {
-                // Logo / Header
-                VStack(spacing: 8) {
-                    Image(systemName: "water.waves")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 64, height: 64)
-                        .foregroundStyle(Color.appTeal)
-                    Text("WhitewaterApp")
-                        .font(.largeTitle.bold())
-                    Text("Paddle smarter.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.top, 40)
+        VStack(spacing: 24) {
+            Spacer()
 
-                // Form
-                VStack(spacing: 16) {
-                    TextField("Email", text: $email)
-                        .keyboardType(.emailAddress)
-                        .autocapitalization(.none)
-                        .textContentType(.emailAddress)
-                        .padding()
-                        .background(.quaternary, in: RoundedRectangle(cornerRadius: 12))
-
-                    SecureField("Password", text: $password)
-                        .textContentType(.password)
-                        .padding()
-                        .background(.quaternary, in: RoundedRectangle(cornerRadius: 12))
-                }
-                .padding(.horizontal)
-
-                if let errorMessage {
-                    Text(errorMessage)
-                        .foregroundStyle(.red)
-                        .font(.caption)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-                }
-
-                // Login Button
-                Button {
-                    Task { await login() }
-                } label: {
-                    if isLoading {
-                        ProgressView()
-                            .progressViewStyle(.circular)
-                            .frame(maxWidth: .infinity)
-                    } else {
-                        Text("Login")
-                            .frame(maxWidth: .infinity)
-                    }
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(Color.appTeal)
-                .disabled(isLoading || email.isEmpty || password.isEmpty)
-                .padding(.horizontal)
-
-                // Forgot Password
-                Button("Forgot Password?") {
-                    Task { await forgotPassword() }
-                }
-                .font(.footnote)
-                .foregroundStyle(Color.appTeal)
-
-                Spacer()
-
-                // Register
-                NavigationLink {
-                    RegisterView()
-                } label: {
-                    Text("Don't have an account? ")
-                        .foregroundStyle(.secondary)
-                    + Text("Register")
-                        .foregroundStyle(Color.appTeal)
-                        .bold()
-                }
-                .font(.footnote)
-                .padding(.bottom, 24)
+            // Logo / Header
+            VStack(spacing: 8) {
+                Image(systemName: "water.waves")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 80, height: 80)
+                    .foregroundStyle(Color.appTeal)
+                Text("WhitewaterApp")
+                    .font(.largeTitle.bold())
+                Text("Paddle smarter.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
+
+            Spacer()
+
+            if let errorMessage {
+                Text(errorMessage)
+                    .foregroundStyle(.red)
+                    .font(.caption)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+            }
+
+            if isLoading {
+                ProgressView("Signing in…")
+                    .progressViewStyle(.circular)
+            }
+
+            // Sign-in buttons
+            VStack(spacing: 14) {
+                // Sign in with Apple
+                SignInWithAppleButton(.signIn) { request in
+                    request.requestedScopes = [.fullName, .email]
+                } onCompletion: { result in
+                    Task { await handleAppleResult(result) }
+                }
+                .signInWithAppleButtonStyle(.black)
+                .frame(height: 50)
+                .cornerRadius(12)
+
+                // Sign in with Google
+                Button {
+                    Task { await signInWithGoogle() }
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "g.circle.fill")
+                            .font(.title2)
+                        Text("Sign in with Google")
+                            .font(.body.weight(.medium))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .background(Color(.systemBackground))
+                    .foregroundStyle(.primary)
+                    .cornerRadius(12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color(.separator), lineWidth: 1)
+                    )
+                }
+            }
+            .disabled(isLoading)
+            .padding(.horizontal)
+
+            // Legal text
+            Text("By signing in, you agree to our Terms of Service and Privacy Policy.")
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
+                .padding(.bottom, 24)
         }
     }
 
-    // MARK: - Actions
+    // MARK: - Apple Sign-In
 
-    private func login() async {
+    private func handleAppleResult(_ result: Result<ASAuthorization, Error>) async {
         isLoading = true
         errorMessage = nil
         defer { isLoading = false }
-        do {
-            _ = try await authService.login(email: email, password: password)
-        } catch {
+
+        switch result {
+        case .success(let authorization):
+            guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
+                  let idTokenData = credential.identityToken,
+                  let idToken = String(data: idTokenData, encoding: .utf8),
+                  let authCodeData = credential.authorizationCode,
+                  let authCode = String(data: authCodeData, encoding: .utf8)
+            else {
+                errorMessage = "Apple Sign-In failed: missing credentials."
+                return
+            }
+
+            do {
+                _ = try await authService.signInWithApple(
+                    identityToken: idToken,
+                    authorizationCode: authCode,
+                    fullName: credential.fullName,
+                    email: credential.email
+                )
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+
+        case .failure(let error):
+            // ASAuthorizationError.canceled means user dismissed the sheet – not an error
+            if (error as? ASAuthorizationError)?.code == .canceled { return }
             errorMessage = error.localizedDescription
         }
     }
 
-    private func forgotPassword() async {
-        guard !email.isEmpty else {
-            errorMessage = "Enter your email address first."
-            return
-        }
+    // MARK: - Google Sign-In
+
+    private func signInWithGoogle() async {
+        isLoading = true
+        errorMessage = nil
+        defer { isLoading = false }
+
         do {
-            try await authService.forgotPassword(email: email)
-            errorMessage = "Password reset email sent."
+            let result = try await googleService.signIn()
+            _ = try await authService.signInWithGoogle(idToken: result.idToken)
         } catch {
             errorMessage = error.localizedDescription
         }
