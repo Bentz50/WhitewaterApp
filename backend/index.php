@@ -133,6 +133,22 @@ switch ($resource) {
         }
         break;
 
+    // ── Clubs ────────────────────────────────────────────────────────
+    case 'clubs':
+        require_once __DIR__ . '/controllers/ClubController.php';
+        $controller = new ClubController();
+        $id = isset($segments[1]) ? (int) $segments[1] : null;
+        if ($id === null) {
+            if ($method === 'GET')  $controller->index($auth);
+            elseif ($method === 'POST') $controller->create($body, $auth);
+            else Response::error('Method not allowed', 405);
+        } elseif ($method === 'DELETE') {
+            $controller->delete($id, $auth);
+        } else {
+            Response::error('Not found', 404);
+        }
+        break;
+
     // ── Rivers ────────────────────────────────────────────────────────
     case 'rivers':
         require_once __DIR__ . '/controllers/RiverController.php';

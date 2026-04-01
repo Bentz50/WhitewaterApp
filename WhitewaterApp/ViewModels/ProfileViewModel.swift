@@ -13,6 +13,7 @@ final class ProfileViewModel: ObservableObject {
     @Published var defaultSkills: [Int] = []
     @Published var achievements: [UserAchievement] = []
     @Published var crew: [User] = []
+    @Published var clubs: [ClubMembership] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
 
@@ -156,5 +157,31 @@ final class ProfileViewModel: ObservableObject {
         struct Empty: Codable {}
         _ = try await api.delete("/users/me/crew/\(userId)", responseType: Empty.self)
         crew.removeAll { $0.id == userId }
+    }
+
+    // MARK: - Clubs
+
+    func loadClubs() async {
+        do {
+            clubs = try await api.get("/clubs", responseType: [ClubMembership].self)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    func addClub(name: String) async throws {
+        struct Body: Encodable { let clubName: String }
+        let created = try await api.post(
+            "/clubs",
+            body: Body(clubName: name),
+            responseType: ClubMembership.self
+        )
+        clubs.append(created)
+    }
+
+    func removeClub(id: Int) async throws {
+        struct Empty: Codable {}
+        _ = try await api.delete("/clubs/\(id)", responseType: Empty.self)
+        clubs.removeAll { $0.id == id }
     }
 }

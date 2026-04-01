@@ -83,6 +83,12 @@ struct ProfileView: View {
                     }
 
                     NavigationLink {
+                        ClubMembershipView(viewModel: viewModel)
+                    } label: {
+                        Label("Clubs", systemImage: "building.2.fill")
+                    }
+
+                    NavigationLink {
                         AchievementsView()
                     } label: {
                         Label("Achievements", systemImage: "trophy.fill")
@@ -108,6 +114,7 @@ struct ProfileView: View {
             .task {
                 await viewModel.loadProfile()
                 await viewModel.loadVessels()
+                await viewModel.loadClubs()
             }
             .refreshable {
                 await viewModel.loadProfile()
