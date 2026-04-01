@@ -18,6 +18,7 @@ final class LocationService: NSObject, ObservableObject, CLLocationManagerDelega
     private let manager = CLLocationManager()
     private var trackingTimer: Timer?
     private var activeVesselType: VesselType = .kayak
+    private var calorieAccumulator: Double = 0.0
 
     private override init() {
         super.init()
@@ -41,6 +42,7 @@ final class LocationService: NSObject, ObservableObject, CLLocationManagerDelega
         distanceMiles = 0
         elapsedSeconds = 0
         caloriesBurned = 0
+        calorieAccumulator = 0.0
         currentSpeedMph = 0
         isTracking = true
 
@@ -107,6 +109,8 @@ final class LocationService: NSObject, ObservableObject, CLLocationManagerDelega
 
     /// Adaptive calorie calculation using GPS-derived speed to estimate variable intensity.
     /// Base MET values per vessel type are scaled by current speed relative to typical cruising speed.
+    /// Called exactly once per second by the tracking timer. Uses a Double accumulator to avoid
+    /// per-tick Int truncation rounding errors.
     private func recalculateCalories() {
         let baseMET: Double
         let cruiseSpeedMph: Double
@@ -126,8 +130,9 @@ final class LocationService: NSObject, ObservableObject, CLLocationManagerDelega
             effectiveMET = baseMET * intensityFactor
         }
 
-        // Increment calories for this tick (1 second)
+        // Accumulate fractional calories per tick (1 second) in Double, then round for display
         let hourFraction = 1.0 / 3_600.0
-        caloriesBurned += Int(effectiveMET * 70.0 * hourFraction)
+        calorieAccumulator += effectiveMET * 70.0 * hourFraction
+        caloriesBurned = Int(calorieAccumulator)
     }
 }

@@ -51,7 +51,7 @@ final class WeatherService: ObservableObject {
             + "?latitude=\(latitude)&longitude=\(longitude)"
             + "&current=temperature_2m,wind_speed_10m,weather_code"
             + "&hourly=temperature_2m,weather_code"
-            + "&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_hours=48"
+            + "&temperature_unit=fahrenheit&wind_speed_unit=mph&forecast_days=2"
 
         guard let url = URL(string: urlString) else {
             throw WhitewaterError.serverError("Invalid Open-Meteo URL")
