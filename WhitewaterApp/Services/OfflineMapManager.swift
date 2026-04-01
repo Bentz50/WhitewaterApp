@@ -110,8 +110,10 @@ final class OfflineMapManager: ObservableObject {
             .replacingOccurrences(of: "{y}", with: "\(path.y)")
 
         guard let url = URL(string: urlString) else { return }
+        var request = URLRequest(url: url)
+        request.setValue("WhitewaterApp/1.0 (iOS; tile-cache)", forHTTPHeaderField: "User-Agent")
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
+            let (data, response) = try await URLSession.shared.data(for: request)
             if let http = response as? HTTPURLResponse, http.statusCode == 200 {
                 cacheTile(data: data, path: path)
             }

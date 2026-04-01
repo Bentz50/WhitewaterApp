@@ -47,6 +47,23 @@ class NotificationController {
         $notified = 0;
         $pushData = ['dam_name' => $damName, 'lat' => $lat, 'lng' => $lng];
 
+        $userIds = array_column($users, 'user_id');
+
+        // Batch-fetch push tokens for all affected users
+        $pushTokens = [];
+        if (!empty($userIds)) {
+            $placeholders = implode(',', array_fill(0, count($userIds), '?'));
+            $tokenStmt = $this->db->prepare(
+                "SELECT id, push_token FROM users WHERE id IN ({$placeholders})"
+            );
+            $tokenStmt->execute($userIds);
+            foreach ($tokenStmt->fetchAll() as $tokenRow) {
+                if (!empty($tokenRow['push_token'])) {
+                    $pushTokens[$tokenRow['id']] = $tokenRow['push_token'];
+                }
+            }
+        }
+
         foreach ($users as $row) {
             $ins->execute([
                 ':uid'   => $row['user_id'],
@@ -58,14 +75,9 @@ class NotificationController {
             $notified++;
 
             // Send APNs push if user has a push token
-            $tokenStmt = $this->db->prepare(
-                'SELECT push_token FROM users WHERE id = :uid'
-            );
-            $tokenStmt->execute([':uid' => $row['user_id']]);
-            $tokenRow = $tokenStmt->fetch();
-            if ($tokenRow && !empty($tokenRow['push_token'])) {
+            if (isset($pushTokens[$row['user_id']])) {
                 $this->sendAPNsPush(
-                    $tokenRow['push_token'],
+                    $pushTokens[$row['user_id']],
                     'Dam Release Alert',
                     $message,
                     $pushData

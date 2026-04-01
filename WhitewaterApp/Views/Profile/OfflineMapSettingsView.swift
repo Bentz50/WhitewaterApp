@@ -5,6 +5,7 @@ import SwiftUI
 struct OfflineMapSettingsView: View {
 
     @StateObject private var mapManager = OfflineMapManager.shared
+    @State private var showClearConfirmation = false
 
     var body: some View {
         List {
@@ -17,11 +18,21 @@ struct OfflineMapSettingsView: View {
                 }
 
                 Button(role: .destructive) {
-                    Task { await mapManager.clearCache() }
+                    showClearConfirmation = true
                 } label: {
                     Label("Clear Cache", systemImage: "trash")
                 }
                 .disabled(mapManager.cacheSizeMB == 0)
+                .confirmationDialog(
+                    "Clear all cached map tiles?",
+                    isPresented: $showClearConfirmation,
+                    titleVisibility: .visible
+                ) {
+                    Button("Clear Cache", role: .destructive) {
+                        Task { await mapManager.clearCache() }
+                    }
+                    Button("Cancel", role: .cancel) {}
+                }
             } header: {
                 Text("Storage")
             }
