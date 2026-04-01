@@ -1,11 +1,16 @@
 // Copyright © 2026 BentzTech LLC. All rights reserved.
 
 import SwiftUI
+import Charts
 
 struct WeatherView: View {
 
-    // TODO: Integrate WeatherKit (import WeatherKit, use WeatherService.shared) for live data.
-    // Current values are placeholders until API integration is complete.
+    let latitude: Double
+    let longitude: Double
+    var gaugeForecasts: [GaugeReading] = []
+
+    @State private var weather: WeatherData?
+    @State private var isLoading = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -13,88 +18,106 @@ struct WeatherView: View {
                 .font(.headline)
 
             // Current conditions
-            HStack(spacing: 24) {
-                WeatherTile(
-                    icon: "thermometer.medium",
-                    value: "—°F",
-                    label: "Air Temp",
-                    color: .orange
-                )
-                WeatherTile(
-                    icon: "drop.fill",
-                    value: "—°F",
-                    label: "Water Temp",
-                    color: .blue
-                )
-                WeatherTile(
-                    icon: "wind",
-                    value: "— mph",
-                    label: "Wind",
-                    color: .gray
-                )
-                WeatherTile(
-                    icon: "cloud.sun.fill",
-                    value: "—",
-                    label: "Sky",
-                    color: .yellow
-                )
+            if let weather {
+                HStack(spacing: 24) {
+                    WeatherTile(
+                        icon: "thermometer.medium",
+                        value: String(format: "%.0f°F", weather.airTempF),
+                        label: "Air Temp",
+                        color: .orange
+                    )
+                    WeatherTile(
+                        icon: "drop.fill",
+                        value: String(format: "%.0f°F", weather.waterTempEstimateF),
+                        label: "Water Est.",
+                        color: .blue
+                    )
+                    WeatherTile(
+                        icon: "wind",
+                        value: String(format: "%.0f mph", weather.windSpeedMph),
+                        label: "Wind",
+                        color: .gray
+                    )
+                    WeatherTile(
+                        icon: weather.weatherIcon,
+                        value: weather.weatherDescription,
+                        label: "Sky",
+                        color: .yellow
+                    )
+                }
+            } else if isLoading {
+                HStack {
+                    Spacer()
+                    ProgressView("Loading weather…")
+                    Spacer()
+                }
+            } else {
+                HStack(spacing: 24) {
+                    WeatherTile(icon: "thermometer.medium", value: "—°F", label: "Air Temp", color: .orange)
+                    WeatherTile(icon: "drop.fill", value: "—°F", label: "Water Est.", color: .blue)
+                    WeatherTile(icon: "wind", value: "— mph", label: "Wind", color: .gray)
+                    WeatherTile(icon: "cloud.sun.fill", value: "—", label: "Sky", color: .yellow)
+                }
             }
 
             Divider()
 
-            // 48-hour forecast placeholder
-            Text("48-Hour Forecast")
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
+            // 48-hour forecast
+            if !gaugeForecasts.isEmpty {
+                Text("48-Hour Gauge Forecast")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 16) {
-                    ForEach(forecastPlaceholders, id: \.hour) { item in
-                        VStack(spacing: 6) {
-                            Text(item.hour)
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                            Image(systemName: item.icon)
-                                .font(.title3)
-                                .foregroundStyle(item.color)
-                            Text(item.temp)
-                                .font(.caption.bold())
+                GaugeChartView(readings: gaugeForecasts)
+                    .frame(height: 120)
+            } else if let weather, !weather.hourlyForecasts.isEmpty {
+                Text("48-Hour Forecast")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 16) {
+                        ForEach(weather.hourlyForecasts) { forecast in
+                            VStack(spacing: 6) {
+                                Text(forecast.hour)
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                                Image(systemName: forecast.icon)
+                                    .font(.title3)
+                                    .foregroundStyle(forecast.color)
+                                Text(String(format: "%.0f°", forecast.tempF))
+                                    .font(.caption.bold())
+                            }
+                            .frame(width: 50)
                         }
-                        .frame(width: 50)
                     }
+                    .padding(.vertical, 4)
                 }
-                .padding(.vertical, 4)
             }
 
-            Text("Weather data: TODO — integrate WeatherKit or Open-Meteo API.")
+            Text("Weather data from Open-Meteo. Water temp is estimated.")
                 .font(.caption2)
                 .foregroundStyle(.tertiary)
         }
         .padding()
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14))
+        .task {
+            await loadWeather()
+        }
     }
 
-    // Placeholder forecast rows
-    private struct ForecastItem {
-        let hour: String
-        let icon: String
-        let color: Color
-        let temp: String
-    }
-
-    private var forecastPlaceholders: [ForecastItem] {
-        let icons: [(String, Color)] = [
-            ("sun.max.fill", .yellow), ("cloud.sun.fill", .orange),
-            ("cloud.fill", .gray), ("cloud.drizzle.fill", .blue),
-            ("cloud.sun.fill", .orange), ("sun.max.fill", .yellow),
-            ("sun.max.fill", .yellow), ("cloud.fill", .gray)
-        ]
-        return icons.enumerated().map { i, pair in
-            ForecastItem(
-                hour: i == 0 ? "Now" : "+\(i * 6)h",
-                icon: pair.0,
-                color: pair.1,
-                temp: "—°"
+    private func loadWeather() async {
+        isLoading = true
+        defer { isLoading = false }
+        do {
+            weather = try await WeatherService.shared.fetchWeather(
+                latitude: latitude,
+                longitude: longitude
+            )
+        } catch {
+            weather = WeatherService.shared.getCachedWeather(
+                latitude: latitude,
+                longitude: longitude
             )
         }
     }
@@ -115,6 +138,8 @@ private struct WeatherTile: View {
                 .foregroundStyle(color)
             Text(value)
                 .font(.subheadline.bold())
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
             Text(label)
                 .font(.caption2)
                 .foregroundStyle(.secondary)

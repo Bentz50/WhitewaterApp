@@ -71,6 +71,15 @@ struct GaugeDashboardView: View {
                 }
             }
 
+            // 48-hour forecast from NOAA
+            if !gaugeData.forecast.isEmpty {
+                Text("48-Hour Gauge Forecast")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                GaugeChartView(readings: gaugeData.forecast)
+                    .frame(height: 120)
+            }
+
             Text("Source: \(gaugeData.siteName) (\(gaugeData.source.rawValue.uppercased()))")
                 .font(.caption2)
                 .foregroundStyle(.tertiary)
