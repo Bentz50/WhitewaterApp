@@ -45,10 +45,9 @@ if ($rawInput !== '') {
 
 // Routes that do NOT require authentication
 $publicRoutes = [
-    'POST /auth/register',
-    'POST /auth/login',
+    'POST /auth/apple',
+    'POST /auth/google',
     'POST /auth/refresh',
-    'POST /auth/forgot-password',
 ];
 
 $routeKey = $method . ' /' . ($segments[0] ?? '') . '/' . ($segments[1] ?? '');
@@ -79,10 +78,9 @@ switch ($resource) {
         $controller = new AuthController();
         $action     = $segments[1] ?? '';
         switch ($action) {
-            case 'register':      $controller->register($body); break;
-            case 'login':         $controller->login($body); break;
+            case 'apple':         $controller->apple($body); break;
+            case 'google':        $controller->google($body); break;
             case 'refresh':       $controller->refresh($body); break;
-            case 'forgot-password': $controller->forgotPassword($body); break;
             default:              Response::error('Not found', 404);
         }
         break;
