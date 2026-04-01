@@ -71,3 +71,65 @@ struct SafariView: UIViewControllerRepresentable {
 
     func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {}
 }
+
+// MARK: - River Video List View
+
+struct RiverVideoListView: View {
+
+    let videos: [RiverVideo]
+    let currentLevel: Double?
+
+    private var filteredVideos: [RiverVideo] {
+        guard let level = currentLevel else { return videos }
+        return videos.filter { video in
+            let aboveMin = video.minLevel.map { level >= $0 } ?? true
+            let belowMax = video.maxLevel.map { level <= $0 } ?? true
+            return aboveMin && belowMax
+        }
+    }
+
+    private var isFiltered: Bool {
+        currentLevel != nil && filteredVideos.count != videos.count
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(isFiltered ? "Videos at Current Level" : "Videos")
+                    .font(.headline)
+                Spacer()
+                Text("\(filteredVideos.count)/\(videos.count)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            if filteredVideos.isEmpty {
+                Text("No videos match the current water level.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .padding(.vertical, 8)
+            } else {
+                ForEach(filteredVideos) { video in
+                    YouTubeLinkView(
+                        title: video.title,
+                        url: video.url,
+                        waterLevel: formatLevel(video)
+                    )
+                }
+            }
+        }
+    }
+
+    private func formatLevel(_ video: RiverVideo) -> String? {
+        switch (video.minLevel, video.maxLevel) {
+        case let (min?, max?):
+            return String(format: "%.1f–%.1f ft", min, max)
+        case let (min?, nil):
+            return String(format: "%.1f+ ft", min)
+        case let (nil, max?):
+            return String(format: "≤%.1f ft", max)
+        default:
+            return nil
+        }
+    }
+}

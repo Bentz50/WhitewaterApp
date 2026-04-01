@@ -87,6 +87,17 @@ struct RiverDetailView: View {
                         .padding(.horizontal)
                     }
 
+                    // Videos
+                    if !runVM.videos.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            RiverVideoListView(
+                                videos: runVM.videos,
+                                currentLevel: runVM.gaugeData?.gageHeightFt
+                            )
+                            .padding(.horizontal)
+                        }
+                    }
+
                     // Hazards
                     if !runVM.hazards.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {

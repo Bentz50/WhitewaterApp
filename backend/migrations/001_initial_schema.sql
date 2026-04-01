@@ -347,6 +347,22 @@ CREATE TABLE river_tags (
   INDEX idx_tag (tag)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- River videos (YouTube links with water level ranges)
+CREATE TABLE river_videos (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  river_id INT UNSIGNED NOT NULL,
+  title VARCHAR(300) NOT NULL,
+  url VARCHAR(500) NOT NULL,
+  min_level DECIMAL(8,2) NULL COMMENT 'Min gauge height (ft) where video is relevant',
+  max_level DECIMAL(8,2) NULL COMMENT 'Max gauge height (ft) where video is relevant',
+  submitted_by INT UNSIGNED NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (river_id) REFERENCES rivers(id) ON DELETE CASCADE,
+  FOREIGN KEY (submitted_by) REFERENCES users(id) ON DELETE SET NULL,
+  INDEX idx_river_id (river_id),
+  INDEX idx_levels (min_level, max_level)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- =============================================================

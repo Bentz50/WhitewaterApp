@@ -162,7 +162,8 @@ switch ($resource) {
         } elseif ($sub === 'gauge')   { $controller->getGauge($id); }
         elseif ($sub === 'hazards')   { $controller->getHazards($id); }
         elseif ($sub === 'runs')      { $controller->getRuns($id, $params, $auth); }
-        elseif ($sub === 'feed')      { $controller->getFeed($id, $auth); }
+        elseif ($sub === 'feed')      { $controller->getFeed($id, $auth, $params); }
+        elseif ($sub === 'videos')    { $controller->getVideos($id, $params); }
         else                          { $controller->show($id); }
         break;
 

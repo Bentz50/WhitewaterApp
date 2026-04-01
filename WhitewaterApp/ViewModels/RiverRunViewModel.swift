@@ -9,6 +9,7 @@ struct RiverPost: Identifiable {
     let content: String
     let username: String
     let createdAt: Date
+    let isCrew: Bool
 }
 
 // MARK: - ViewModel
@@ -22,6 +23,8 @@ final class RiverRunViewModel: ObservableObject {
     @Published var gaugeData: GaugeData?
     @Published var hazards: [Hazard] = []
     @Published var beaterFeed: [RiverPost] = []
+    @Published var videos: [RiverVideo] = []
+    @Published var crewOnlyFeed = false
     @Published var isTracking: Bool = false
     @Published var elapsedSeconds: Int = 0
     @Published var distanceMiles: Double = 0.0
@@ -45,6 +48,7 @@ final class RiverRunViewModel: ObservableObject {
             await refreshGauge()
             await loadHazards()
             await loadBeaterFeed()
+            await loadVideos()
         } catch {
             // Non-fatal: river may already be set from navigation context
         }
@@ -129,7 +133,7 @@ final class RiverRunViewModel: ObservableObject {
 
     // MARK: - Beater Feed
 
-    func loadBeaterFeed() async {
+    func loadBeaterFeed(crewOnly: Bool = false) async {
         guard let river else { return }
         do {
             struct FeedPost: Codable {
@@ -137,11 +141,32 @@ final class RiverRunViewModel: ObservableObject {
                 let content: String
                 let username: String
                 let createdAt: Date
+                let isCrew: Bool
             }
-            let raw = try await api.get("/rivers/\(river.id)/feed", responseType: [FeedPost].self)
-            beaterFeed = raw.map { RiverPost(id: $0.id, content: $0.content, username: $0.username, createdAt: $0.createdAt) }
+            var path = "/rivers/\(river.id)/feed"
+            if crewOnly { path += "?scope=crew" }
+            let raw = try await api.get(path, responseType: [FeedPost].self)
+            beaterFeed = raw.map {
+                RiverPost(id: $0.id, content: $0.content, username: $0.username,
+                          createdAt: $0.createdAt, isCrew: $0.isCrew)
+            }
         } catch {
             beaterFeed = []
+        }
+    }
+
+    // MARK: - Videos
+
+    func loadVideos() async {
+        guard let river else { return }
+        do {
+            var path = "/rivers/\(river.id)/videos"
+            if let level = gaugeData?.gageHeightFt {
+                path += "?level=\(level)"
+            }
+            videos = try await api.get(path, responseType: [RiverVideo].self)
+        } catch {
+            videos = []
         }
     }
 }
