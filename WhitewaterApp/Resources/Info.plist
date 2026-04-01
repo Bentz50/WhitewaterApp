@@ -75,5 +75,19 @@
         <false/>
     </dict>
 
+    <!-- URL Schemes (Google Sign-In callback) -->
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <!-- Replace with your reversed Google client ID from Google Cloud Console -->
+                <string>com.googleusercontent.apps.YOUR_GOOGLE_CLIENT_ID</string>
+            </array>
+        </dict>
+    </array>
+
 </dict>
 </plist>

@@ -180,6 +180,7 @@ struct OnboardingView: View {
             waterExperiences: Array(selectedExperiences),
             interests: selectedVesselTypes.map(\.rawValue)
         )
+        authService.onboardingComplete()
     }
 }
 

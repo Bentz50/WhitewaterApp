@@ -12,7 +12,11 @@ struct WhitewaterApp: App {
         WindowGroup {
             Group {
                 if authService.isAuthenticated {
-                    MainTabView()
+                    if authService.isNewUser {
+                        OnboardingView()
+                    } else {
+                        MainTabView()
+                    }
                 } else {
                     LoginView()
                 }
