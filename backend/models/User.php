@@ -16,17 +16,38 @@ class User {
         return $row ?: null;
     }
 
+    public static function findByAppleId(PDO $db, string $appleId): ?array {
+        $stmt = $db->prepare('SELECT * FROM users WHERE apple_id = :apple_id LIMIT 1');
+        $stmt->execute([':apple_id' => $appleId]);
+        $row = $stmt->fetch();
+        return $row ?: null;
+    }
+
+    public static function findByGoogleId(PDO $db, string $googleId): ?array {
+        $stmt = $db->prepare('SELECT * FROM users WHERE google_id = :google_id LIMIT 1');
+        $stmt->execute([':google_id' => $googleId]);
+        $row = $stmt->fetch();
+        return $row ?: null;
+    }
+
     public static function create(PDO $db, array $data): int {
         $sql = 'INSERT INTO users
-                    (username, email, password_hash, display_name, created_at, updated_at)
+                    (username, email, password_hash, display_name,
+                     apple_id, google_id, auth_provider,
+                     created_at, updated_at)
                 VALUES
-                    (:username, :email, :password_hash, :display_name, NOW(), NOW())';
+                    (:username, :email, :password_hash, :display_name,
+                     :apple_id, :google_id, :auth_provider,
+                     NOW(), NOW())';
         $stmt = $db->prepare($sql);
         $stmt->execute([
             ':username'      => $data['username'],
-            ':email'         => $data['email'],
-            ':password_hash' => $data['password_hash'],
+            ':email'         => $data['email'] ?? null,
+            ':password_hash' => $data['password_hash'] ?? null,
             ':display_name'  => $data['display_name'] ?? $data['username'],
+            ':apple_id'      => $data['apple_id'] ?? null,
+            ':google_id'     => $data['google_id'] ?? null,
+            ':auth_provider' => $data['auth_provider'] ?? 'apple',
         ]);
         return (int) $db->lastInsertId();
     }
