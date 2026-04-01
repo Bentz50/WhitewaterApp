@@ -8,18 +8,32 @@ struct BeaterFeedView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
-                if viewModel.beaterFeed.isEmpty {
-                    ContentUnavailableView(
-                        "No Posts Yet",
-                        systemImage: "bubble.left",
-                        description: Text("Be the first to report conditions on this section.")
-                    )
-                } else {
-                    List(viewModel.beaterFeed) { post in
-                        BeaterPostRow(post: post)
+            VStack(spacing: 0) {
+                // Scope picker
+                Picker("Feed", selection: $viewModel.crewOnlyFeed) {
+                    Text("All").tag(false)
+                    Text("Crew").tag(true)
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+                .onChange(of: viewModel.crewOnlyFeed) { _ in
+                    Task { await viewModel.loadBeaterFeed(crewOnly: viewModel.crewOnlyFeed) }
+                }
+
+                Group {
+                    if viewModel.beaterFeed.isEmpty {
+                        ContentUnavailableView(
+                            "No Posts Yet",
+                            systemImage: "bubble.left",
+                            description: Text("Be the first to report conditions on this section.")
+                        )
+                    } else {
+                        List(viewModel.beaterFeed) { post in
+                            BeaterPostRow(post: post)
+                        }
+                        .listStyle(.plain)
                     }
-                    .listStyle(.plain)
                 }
             }
             .navigationTitle("Beater Feed")
@@ -27,13 +41,13 @@ struct BeaterFeedView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        Task { await viewModel.loadBeaterFeed() }
+                        Task { await viewModel.loadBeaterFeed(crewOnly: viewModel.crewOnlyFeed) }
                     } label: {
                         Image(systemName: "arrow.clockwise")
                     }
                 }
             }
-            .task { await viewModel.loadBeaterFeed() }
+            .task { await viewModel.loadBeaterFeed(crewOnly: viewModel.crewOnlyFeed) }
         }
     }
 }
@@ -55,7 +69,14 @@ private struct BeaterPostRow: View {
                             .foregroundStyle(Color.appTeal)
                     }
                 VStack(alignment: .leading, spacing: 1) {
-                    Text(post.username).font(.subheadline.bold())
+                    HStack(spacing: 4) {
+                        Text(post.username).font(.subheadline.bold())
+                        if post.isCrew {
+                            Image(systemName: "person.2.fill")
+                                .font(.caption2)
+                                .foregroundStyle(Color.appTeal)
+                        }
+                    }
                     Text(post.createdAt.timeAgoString)
                         .font(.caption2)
                         .foregroundStyle(.secondary)

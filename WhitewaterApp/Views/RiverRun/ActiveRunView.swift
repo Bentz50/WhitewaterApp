@@ -7,6 +7,7 @@ struct ActiveRunView: View {
 
     @StateObject var viewModel: RiverRunViewModel
     @State private var showBeaterFeed = false
+    @State private var showWeather = false
     @State private var navigateToPostRun = false
     @State private var draftRunLog: RunLog?
     @State private var cameraPosition: MapCameraPosition = .userLocation(fallback: .automatic)
@@ -104,6 +105,19 @@ struct ActiveRunView: View {
                         }
                         .foregroundStyle(Color.appTeal)
                     }
+
+                    // Weather
+                    Button {
+                        showWeather = true
+                    } label: {
+                        VStack(spacing: 4) {
+                            Image(systemName: "cloud.sun.fill")
+                                .font(.title2)
+                            Text("Weather")
+                                .font(.caption2)
+                        }
+                        .foregroundStyle(Color.appTeal)
+                    }
                 }
                 .padding(.horizontal, 24)
                 .padding(.vertical, 12)
@@ -113,6 +127,28 @@ struct ActiveRunView: View {
         .sheet(isPresented: $showBeaterFeed) {
             BeaterFeedView(viewModel: viewModel)
                 .presentationDetents([.medium, .large])
+        }
+        .sheet(isPresented: $showWeather) {
+            if let river = viewModel.river {
+                NavigationStack {
+                    ScrollView {
+                        WeatherView(
+                            latitude: river.lat,
+                            longitude: river.lng,
+                            gaugeForecasts: viewModel.gaugeData?.forecast ?? []
+                        )
+                        .padding()
+                    }
+                    .navigationTitle("Weather")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Done") { showWeather = false }
+                        }
+                    }
+                }
+                .presentationDetents([.medium, .large])
+            }
         }
         .navigationDestination(isPresented: $navigateToPostRun) {
             if let river = viewModel.river {

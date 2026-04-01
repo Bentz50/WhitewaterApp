@@ -4,6 +4,7 @@
 require_once __DIR__ . '/../models/River.php';
 require_once __DIR__ . '/../models/Hazard.php';
 require_once __DIR__ . '/../models/RunLog.php';
+require_once __DIR__ . '/../models/RiverVideo.php';
 
 class RiverController {
     private PDO $db;
@@ -101,21 +102,86 @@ class RiverController {
         Response::success($runs);
     }
 
-    public function getFeed(int $id, ?array $auth): void {
+    public function getFeed(int $id, ?array $auth, array $params = []): void {
         $river = River::findById($this->db, $id);
         if (!$river) {
             Response::error('River not found', 404);
         }
 
-        $stmt = $this->db->prepare(
-            'SELECT p.*, u.username, u.display_name, u.avatar_url
-             FROM posts p
-             JOIN users u ON u.id = p.user_id
-             WHERE p.river_id = :rid
-             ORDER BY p.created_at DESC
-             LIMIT 30'
-        );
-        $stmt->execute([':rid' => $id]);
+        $scope  = Validator::sanitizeString($params['scope'] ?? '');
+        $userId = $auth['user_id'] ?? null;
+
+        if ($scope === 'crew' && $userId) {
+            // Crew-only: posts from crew members on this river
+            $stmt = $this->db->prepare(
+                'SELECT p.*, u.username, u.display_name, u.avatar_url, 1 AS is_crew
+                 FROM posts p
+                 JOIN users u ON u.id = p.user_id
+                 WHERE p.river_id = :rid
+                   AND p.user_id IN (
+                       SELECT friend_id FROM crew WHERE user_id = :uid1 AND status = \'accepted\'
+                       UNION
+                       SELECT user_id FROM crew WHERE friend_id = :uid2 AND status = \'accepted\'
+                   )
+                 ORDER BY p.created_at DESC
+                 LIMIT 30'
+            );
+            $stmt->execute([':rid' => $id, ':uid1' => $userId, ':uid2' => $userId]);
+        } elseif ($userId) {
+            // Authenticated: public posts + crew-visible posts from crew members
+            $stmt = $this->db->prepare(
+                'SELECT p.*, u.username, u.display_name, u.avatar_url,
+                        CASE WHEN c.id IS NOT NULL THEN 1 ELSE 0 END AS is_crew
+                 FROM posts p
+                 JOIN users u ON u.id = p.user_id
+                 LEFT JOIN run_logs rl ON rl.id = p.run_log_id
+                 LEFT JOIN (
+                     SELECT friend_id AS crew_uid, id FROM crew WHERE user_id = :uid1 AND status = \'accepted\'
+                     UNION
+                     SELECT user_id AS crew_uid, id FROM crew WHERE friend_id = :uid2 AND status = \'accepted\'
+                 ) c ON c.crew_uid = p.user_id
+                 WHERE p.river_id = :rid
+                   AND (
+                       rl.privacy IS NULL
+                       OR rl.privacy = \'public\'
+                       OR (rl.privacy = \'crew\' AND c.id IS NOT NULL)
+                       OR p.user_id = :uid3
+                   )
+                 ORDER BY p.created_at DESC
+                 LIMIT 30'
+            );
+            $stmt->execute([
+                ':rid'  => $id,
+                ':uid1' => $userId,
+                ':uid2' => $userId,
+                ':uid3' => $userId,
+            ]);
+        } else {
+            // Unauthenticated: only public posts
+            $stmt = $this->db->prepare(
+                'SELECT p.*, u.username, u.display_name, u.avatar_url, 0 AS is_crew
+                 FROM posts p
+                 JOIN users u ON u.id = p.user_id
+                 LEFT JOIN run_logs rl ON rl.id = p.run_log_id
+                 WHERE p.river_id = :rid
+                   AND (rl.privacy IS NULL OR rl.privacy = \'public\')
+                 ORDER BY p.created_at DESC
+                 LIMIT 30'
+            );
+            $stmt->execute([':rid' => $id]);
+        }
+
         Response::success($stmt->fetchAll());
+    }
+
+    public function getVideos(int $id, array $params): void {
+        $river = River::findById($this->db, $id);
+        if (!$river) {
+            Response::error('River not found', 404);
+        }
+
+        $level = Validator::sanitizeFloat($params['level'] ?? null);
+        $videos = RiverVideo::findByRiverId($this->db, $id, $level);
+        Response::success($videos);
     }
 }

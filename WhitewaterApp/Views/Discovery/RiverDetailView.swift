@@ -74,6 +74,30 @@ struct RiverDetailView: View {
                             .padding(.horizontal)
                     }
 
+                    // Weather
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Weather")
+                            .font(.headline)
+                            .padding(.horizontal)
+                        WeatherView(
+                            latitude: river.lat,
+                            longitude: river.lng,
+                            gaugeForecasts: runVM.gaugeData?.forecast ?? []
+                        )
+                        .padding(.horizontal)
+                    }
+
+                    // Videos
+                    if !runVM.videos.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            RiverVideoListView(
+                                videos: runVM.videos,
+                                currentLevel: runVM.gaugeData?.gageHeightFt
+                            )
+                            .padding(.horizontal)
+                        }
+                    }
+
                     // Hazards
                     if !runVM.hazards.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {

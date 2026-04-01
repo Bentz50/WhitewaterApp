@@ -15,4 +15,5 @@ define('RATE_LIMIT_WINDOW', 3600); // per hour
 define('USGS_BASE_URL', 'https://waterservices.usgs.gov/nwis/iv/');
 define('NOAA_BASE_URL', 'https://water.weather.gov/ahps2/hydrograph_to_xml.php');
 define('GAUGE_CACHE_TTL', 900);                     // 15 minutes
-define('PUSH_CERT_PATH', __DIR__ . '/../certs/apns.pem'); // TODO: APNs cert
+define('PUSH_CERT_PATH', __DIR__ . '/../certs/apns.pem');
+define('APNS_TOPIC', 'com.bentztech.whitewaterapp');

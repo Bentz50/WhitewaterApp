@@ -72,6 +72,12 @@ struct ProfileView: View {
                     } label: {
                         Label("Skills", systemImage: "star.fill")
                     }
+
+                    NavigationLink {
+                        OfflineMapSettingsView()
+                    } label: {
+                        Label("Offline Maps", systemImage: "map.fill")
+                    }
                 }
 
                 // Social
@@ -80,6 +86,12 @@ struct ProfileView: View {
                         CrewListView(viewModel: viewModel)
                     } label: {
                         Label("Crew", systemImage: "person.2.fill")
+                    }
+
+                    NavigationLink {
+                        ClubMembershipView(viewModel: viewModel)
+                    } label: {
+                        Label("Clubs", systemImage: "building.2.fill")
                     }
 
                     NavigationLink {
@@ -108,6 +120,7 @@ struct ProfileView: View {
             .task {
                 await viewModel.loadProfile()
                 await viewModel.loadVessels()
+                await viewModel.loadClubs()
             }
             .refreshable {
                 await viewModel.loadProfile()
