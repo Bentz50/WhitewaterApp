@@ -7,7 +7,6 @@ struct LoginView: View {
 
     @EnvironmentObject var authService: AuthService
 
-    @StateObject private var appleCoordinator = AppleSignInCoordinator()
     @StateObject private var googleService = GoogleSignInService()
 
     @State private var isLoading: Bool = false

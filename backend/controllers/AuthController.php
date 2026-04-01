@@ -31,9 +31,11 @@ class AuthController {
             Response::error('Apple token missing subject', 401);
         }
 
-        $email = $claims['email'] ?? ($body['email'] ?? null);
-        if ($email !== null) {
-            $email = strtolower(trim($email));
+        $email = null;
+        if (!empty($claims['email'])) {
+            $email = strtolower(trim($claims['email']));
+        } elseif (!empty($body['email'])) {
+            $email = strtolower(trim($body['email']));
         }
 
         $fullName = $body['full_name'] ?? null;
@@ -240,8 +242,9 @@ class AuthController {
         $base = substr($base, 0, 24);
         $username = $base;
         $suffix = 1;
+        $maxAttempts = 100;
 
-        while (true) {
+        while ($maxAttempts-- > 0) {
             $stmt = $this->db->prepare('SELECT id FROM users WHERE username = :u LIMIT 1');
             $stmt->execute([':u' => $username]);
             if (!$stmt->fetch()) {
@@ -250,6 +253,9 @@ class AuthController {
             $username = $base . $suffix;
             $suffix++;
         }
+
+        // Fallback: append random hex to guarantee uniqueness
+        return $base . bin2hex(random_bytes(4));
     }
 
     // ── Apple Token Verification ─────────────────────────────────────
@@ -294,7 +300,12 @@ class AuthController {
         $data = "$headerB64.$payloadB64";
         $signature = $this->base64UrlDecode($signatureB64);
 
-        $alg = $header['alg'] === 'RS256' ? OPENSSL_ALGO_SHA256 : OPENSSL_ALGO_SHA256;
+        $alg = match ($header['alg'] ?? '') {
+            'RS256' => OPENSSL_ALGO_SHA256,
+            'RS384' => OPENSSL_ALGO_SHA384,
+            'RS512' => OPENSSL_ALGO_SHA512,
+            default => OPENSSL_ALGO_SHA256,
+        };
         $valid = openssl_verify($data, $signature, $publicKey, $alg);
         if ($valid !== 1) {
             return null;
