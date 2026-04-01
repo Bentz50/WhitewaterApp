@@ -105,15 +105,29 @@ final class LocationService: NSObject, ObservableObject, CLLocationManagerDelega
 
     // MARK: - Calorie Estimation
 
-    /// Uses MET (metabolic equivalent) values per vessel type against a standard 70 kg body weight.
+    /// Adaptive calorie calculation using GPS-derived speed to estimate variable intensity.
+    /// Base MET values per vessel type are scaled by current speed relative to typical cruising speed.
     private func recalculateCalories() {
-        let met: Double
+        let baseMET: Double
+        let cruiseSpeedMph: Double
+
         switch activeVesselType {
-        case .kayak: met = 5.0
-        case .canoe: met = 4.0
-        case .raft:  met = 3.5
+        case .kayak: baseMET = 5.0; cruiseSpeedMph = 3.5
+        case .canoe: baseMET = 4.0; cruiseSpeedMph = 3.0
+        case .raft:  baseMET = 3.5; cruiseSpeedMph = 2.5
         }
-        let hours = Double(elapsedSeconds) / 3_600
-        caloriesBurned = Int(met * 70.0 * hours)
+
+        let effectiveMET: Double
+        if currentSpeedMph < 0.5 {
+            effectiveMET = 1.5  // resting/eddied out
+        } else {
+            let speedRatio = currentSpeedMph / cruiseSpeedMph
+            let intensityFactor = min(max(speedRatio, 0.7), 2.0)
+            effectiveMET = baseMET * intensityFactor
+        }
+
+        // Increment calories for this tick (1 second)
+        let hourFraction = 1.0 / 3_600.0
+        caloriesBurned += Int(effectiveMET * 70.0 * hourFraction)
     }
 }

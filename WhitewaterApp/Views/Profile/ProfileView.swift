@@ -72,6 +72,12 @@ struct ProfileView: View {
                     } label: {
                         Label("Skills", systemImage: "star.fill")
                     }
+
+                    NavigationLink {
+                        OfflineMapSettingsView()
+                    } label: {
+                        Label("Offline Maps", systemImage: "map.fill")
+                    }
                 }
 
                 // Social

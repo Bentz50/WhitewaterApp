@@ -45,16 +45,32 @@ class NotificationController {
         );
 
         $notified = 0;
+        $pushData = ['dam_name' => $damName, 'lat' => $lat, 'lng' => $lng];
+
         foreach ($users as $row) {
             $ins->execute([
                 ':uid'   => $row['user_id'],
                 ':type'  => 'dam_release',
                 ':title' => 'Dam Release Alert',
                 ':body'  => $message,
-                ':data'  => json_encode(['dam_name' => $damName, 'lat' => $lat, 'lng' => $lng]),
+                ':data'  => json_encode($pushData),
             ]);
             $notified++;
-            // TODO: Send actual APNs push notification using PUSH_CERT_PATH
+
+            // Send APNs push if user has a push token
+            $tokenStmt = $this->db->prepare(
+                'SELECT push_token FROM users WHERE id = :uid'
+            );
+            $tokenStmt->execute([':uid' => $row['user_id']]);
+            $tokenRow = $tokenStmt->fetch();
+            if ($tokenRow && !empty($tokenRow['push_token'])) {
+                $this->sendAPNsPush(
+                    $tokenRow['push_token'],
+                    'Dam Release Alert',
+                    $message,
+                    $pushData
+                );
+            }
         }
 
         Response::success(['notified_users' => $notified], 'Notifications queued');
@@ -69,6 +85,58 @@ class NotificationController {
         );
         $stmt->execute([':uid' => (int) $auth['user_id']]);
         Response::success($stmt->fetchAll());
+    }
+
+    /**
+     * Send an APNs push notification via HTTP/2 using cURL.
+     */
+    private function sendAPNsPush(string $deviceToken, string $title, string $body, array $data = []): bool {
+        $isSandbox = defined('APP_ENV') && APP_ENV !== 'production';
+        $host = $isSandbox
+            ? 'https://api.sandbox.push.apple.com'
+            : 'https://api.push.apple.com';
+        $url = "{$host}/3/device/{$deviceToken}";
+
+        $payload = json_encode([
+            'aps' => [
+                'alert' => ['title' => $title, 'body' => $body],
+                'sound' => 'default',
+                'badge' => 1,
+            ],
+            'data' => $data,
+        ]);
+
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_2_0,
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => $payload,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 10,
+            CURLOPT_SSLCERT        => PUSH_CERT_PATH,
+            CURLOPT_HTTPHEADER     => [
+                'Content-Type: application/json',
+                'apns-topic: ' . APNS_TOPIC,
+                'apns-push-type: alert',
+            ],
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($curlError) {
+            error_log("APNs cURL error for token {$deviceToken}: {$curlError}");
+            return false;
+        }
+
+        if ($httpCode !== 200) {
+            error_log("APNs HTTP {$httpCode} for token {$deviceToken}: {$response}");
+            return false;
+        }
+
+        return true;
     }
 
     public function markRead(int $id, array $auth): void {
