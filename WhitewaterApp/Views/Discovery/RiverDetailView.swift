@@ -61,12 +61,12 @@ struct RiverDetailView: View {
                     }
 
                     // Sections list (when available)
-                    if river.hasSections {
+                    if let sections = river.sections, !sections.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Sections")
                                 .font(.headline)
                                 .padding(.horizontal)
-                            ForEach(river.sections!) { section in
+                            ForEach(sections) { section in
                                 NavigationLink(destination: SectionDetailView(river: river, section: section)) {
                                     SectionCard(section: section)
                                 }

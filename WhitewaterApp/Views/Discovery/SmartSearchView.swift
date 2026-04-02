@@ -127,8 +127,8 @@ struct RiverCard: View {
                                 .foregroundStyle(runnable ? .green : .red)
                                 .labelStyle(.titleAndIcon)
                         }
-                        if river.hasSections {
-                            Label("\(river.sections!.count) sections", systemImage: "list.bullet")
+                        if let sections = river.sections, !sections.isEmpty {
+                            Label("\(sections.count) sections", systemImage: "list.bullet")
                                 .font(.caption2)
                                 .foregroundStyle(Color.appTeal)
                                 .labelStyle(.titleAndIcon)
