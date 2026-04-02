@@ -62,7 +62,7 @@
 | Backend | PHP 8.1+, Apache |
 | Database | MySQL 8.0+, InnoDB, utf8mb4 |
 | Hosting | Hostinger (Business/Cloud) |
-| Auth | JWT Bearer token (30-day expiry) |
+| Auth | Sign in with Apple / Google + JWT Bearer tokens |
 | Push | Apple Push Notification Service (APNs HTTP/2) |
 | Gauge Data | USGS Water Services API, NOAA NWS API |
 
@@ -74,24 +74,24 @@
 WhitewaterApp/
 ├── WhitewaterApp/                  # iOS Xcode project source
 │   ├── App/
+│   ├── Components/                 # Reusable SwiftUI components
 │   ├── Config/
 │   │   └── APIConfig.swift         # Base URL & JWT storage
+│   ├── Extensions/                 # Swift extensions
 │   ├── Models/                     # Codable data models
+│   ├── Resources/                  # Asset catalogs & resources
 │   ├── Views/                      # SwiftUI views & screens
 │   ├── ViewModels/                 # ObservableObject view models
-│   ├── Services/                   # API service layer
-│   └── Assets.xcassets
+│   └── Services/                   # API service layer
 ├── WhitewaterApp.xcodeproj/
 ├── backend/
-│   ├── migrations/
-│   │   └── 001_initial_schema.sql  # Full DB schema + seed data
+│   ├── migrations/                 # SQL migration files
 │   ├── config/                     # DB + app config (not committed)
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── helpers/
-│   ├── routes/api.php
-│   ├── index.php
+│   ├── controllers/                # Request handlers
+│   ├── middleware/                  # Auth, CORS, rate limiting
+│   ├── models/                     # Database models
+│   ├── utils/                      # JWT, Response, Validator, etc.
+│   ├── index.php                   # Entry point & router
 │   ├── .htaccess
 │   └── README.md                   # Backend setup guide
 ├── README.md
@@ -111,9 +111,13 @@ git clone https://github.com/BentzTech/WhitewaterApp.git
 open WhitewaterApp.xcodeproj
 ```
 
-Edit `WhitewaterApp/Config/APIConfig.swift`:
+Edit `WhitewaterApp/Config/APIConfig.swift` and set `baseURL` to match your deployment:
 ```swift
+// If your backend is deployed at public_html/api/ (as described in DEPLOYMENT.md):
 static let baseURL = "https://your-domain.com/api/v1"
+
+// Or if using a subdomain that points directly to the backend:
+// static let baseURL = "https://api.your-domain.com/v1"
 ```
 
 Set your Apple Developer Team and Bundle ID (`com.bentztech.whitewaterapp`) in Xcode Signing & Capabilities, then run on iOS 17+ simulator or device.

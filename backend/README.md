@@ -105,35 +105,51 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 ```
 backend/
 ├── migrations/
-│   └── 001_initial_schema.sql   # Full DB schema + seed data
+│   ├── 001_initial_schema.sql   # Full DB schema + seed data
+│   └── 002_third_party_auth.sql # Apple/Google auth columns
 ├── config/
-│   ├── database.php             # PDO connection singleton
-│   └── config.php               # App-wide constants (JWT secret, CORS, etc.)
+│   ├── database.php             # PDO connection singleton (Database class)
+│   └── config.php               # App-wide constants (JWT secret, rate limits, etc.)
 ├── controllers/
-│   ├── AuthController.php
-│   ├── UserController.php
-│   ├── RiverController.php
-│   ├── RunLogController.php
-│   ├── HazardController.php
-│   ├── PostController.php
-│   ├── MessageController.php
-│   ├── EventController.php
-│   └── GaugeController.php
+│   ├── AuthController.php       # Apple & Google sign-in, token refresh
+│   ├── UserController.php       # Profile, search, crew management
+│   ├── RiverController.php      # River listing, search, sub-resources
+│   ├── RunLogController.php     # Run log CRUD, skills, media, reports
+│   ├── HazardController.php     # Hazard CRUD, verify, clear
+│   ├── SocialController.php     # Feed, posts, comments, likes
+│   ├── MessageController.php    # Direct messaging
+│   ├── EventController.php      # Community events
+│   ├── GaugeController.php      # USGS/NOAA gauge data & forecasts
+│   ├── AchievementController.php
+│   ├── NotificationController.php
+│   ├── VesselController.php     # Boats/kayaks CRUD
+│   ├── ClubController.php       # Club membership
+│   └── SkillController.php      # Skill definitions & user defaults
 ├── middleware/
-│   ├── AuthMiddleware.php       # JWT validation
-│   └── CorsMiddleware.php
+│   ├── auth.php                 # JWT validation (requireAuth / optionalAuth)
+│   ├── cors.php                 # CORS headers & preflight handling
+│   └── rate_limit.php           # IP-based rate limiting
 ├── models/
 │   ├── User.php
 │   ├── River.php
 │   ├── RunLog.php
-│   └── ...
-├── helpers/
+│   ├── Hazard.php
+│   ├── Event.php
+│   ├── Message.php
+│   ├── Achievement.php
+│   ├── Vessel.php
+│   ├── Skill.php
+│   ├── ClubMembership.php
+│   ├── Comment.php
+│   ├── Media.php
+│   └── RiverVideo.php
+├── utils/
 │   ├── JWT.php                  # Lightweight JWT encode/decode
 │   ├── Response.php             # Standardised JSON responses
-│   └── Validator.php
-├── routes/
-│   └── api.php                  # Route definitions
-├── index.php                    # Entry point / front controller
+│   ├── Validator.php            # Input validation & sanitization
+│   ├── FileUpload.php           # Photo/video upload handling
+│   └── GaugeProxy.php           # USGS/NOAA API proxy with caching
+├── index.php                    # Entry point / front controller & router
 └── .htaccess                    # URL rewriting + HTTPS redirect
 ```
 
@@ -143,38 +159,80 @@ backend/
 
 ### `config/database.php`
 
+The actual file uses a **singleton `Database` class** — not plain `define()` constants.  
+Edit the credentials directly in the class properties:
+
 ```php
 <?php
-define('DB_HOST', 'localhost');          // Always localhost on Hostinger shared
-define('DB_NAME', 'u123456789_whitewaterapp'); // Replace with your actual DB name
-define('DB_USER', 'u123456789_whitewaterapp_user');
-define('DB_PASS', 'YOUR_STRONG_DB_PASSWORD');  // ← Change this
-define('DB_CHARSET', 'utf8mb4');
+class Database {
+    private string $host     = 'localhost';          // Always localhost on Hostinger shared
+    private string $db_name  = 'u123456789_whitewaterapp'; // Replace with your actual DB name
+    private string $username = 'u123456789_whitewaterapp_user';
+    private string $password = 'YOUR_STRONG_DB_PASSWORD';  // ← Change this
+    private string $charset  = 'utf8mb4';
 
-function getDB(): PDO {
-    static $pdo = null;
-    if ($pdo === null) {
-        $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET;
-        $pdo = new PDO($dsn, DB_USER, DB_PASS, [
+    private static ?Database $instance = null;
+    private ?PDO $conn = null;
+
+    private function __construct() {}
+
+    public static function getInstance(): self {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    public function getConnection(): PDO {
+        if ($this->conn !== null) {
+            return $this->conn;
+        }
+        $dsn = "mysql:host={$this->host};dbname={$this->db_name};charset={$this->charset}";
+        $options = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false,
-        ]);
+        ];
+        try {
+            $this->conn = new PDO($dsn, $this->username, $this->password, $options);
+        } catch (PDOException $e) {
+            error_log('Database connection failed: ' . $e->getMessage());
+            Response::error('Database connection failed', 500);
+            exit;
+        }
+        return $this->conn;
     }
-    return $pdo;
+
+    public function getConn(): PDO {
+        return $this->getConnection();
+    }
 }
+```
+
+Controllers access the database via:
+```php
+$this->db = Database::getInstance()->getConn();
 ```
 
 ### `config/config.php`
 
 ```php
 <?php
-define('JWT_SECRET', 'REPLACE_WITH_RANDOM_256BIT_SECRET'); // ← Change this
-define('JWT_EXPIRY_SECONDS', 86400 * 30);                  // 30 days
-define('APP_ENV', 'production');                            // 'development' | 'production'
-define('CORS_ALLOWED_ORIGINS', ['https://your-domain.com']);
-define('UPLOAD_MAX_MB', 20);
-define('API_VERSION', '1.0.0');
+define('JWT_SECRET', 'CHANGE_THIS_TO_A_RANDOM_SECRET_KEY_MIN_32_CHARS'); // ← Change this
+define('JWT_EXPIRY', 86400 * 7);               // Access token: 7 days
+define('REFRESH_TOKEN_EXPIRY', 86400 * 30);    // Refresh token: 30 days
+define('APP_ENV', 'production');                // 'development' | 'production'
+define('MAX_FILE_SIZE', 10 * 1024 * 1024);     // 10 MB photos
+define('MAX_VIDEO_SIZE', 100 * 1024 * 1024);   // 100 MB video
+define('UPLOAD_PATH', __DIR__ . '/../uploads/');
+define('UPLOAD_URL', 'https://your-domain.com/uploads/');  // ← Change this
+define('RATE_LIMIT_REQUESTS', 100);
+define('RATE_LIMIT_WINDOW', 3600);             // Per hour
+define('USGS_BASE_URL', 'https://waterservices.usgs.gov/nwis/iv/');
+define('NOAA_BASE_URL', 'https://water.weather.gov/ahps2/hydrograph_to_xml.php');
+define('GAUGE_CACHE_TTL', 900);                // 15 minutes
+define('PUSH_CERT_PATH', __DIR__ . '/../certs/apns.pem');
+define('APNS_TOPIC', 'com.bentztech.whitewaterapp');
 ```
 
 > **Never commit `config/database.php` or `config/config.php` with real credentials.**  
@@ -207,16 +265,15 @@ define('API_VERSION', '1.0.0');
 All endpoints are prefixed with `/api/v1`.  
 Authentication uses **Bearer JWT** in the `Authorization` header unless marked `[public]`.
 
+> **Note:** This app uses **Sign in with Apple** and **Sign in with Google** — there is no email/password registration or login.
+
 ### Auth
 
 | Method | Endpoint | Description |
 |---|---|---|
-| POST | `/auth/register` | Register new user `[public]` |
-| POST | `/auth/login` | Login, returns JWT `[public]` |
-| POST | `/auth/logout` | Invalidate token |
-| POST | `/auth/refresh` | Refresh JWT |
-| POST | `/auth/forgot-password` | Send reset email `[public]` |
-| POST | `/auth/reset-password` | Reset with token `[public]` |
+| POST | `/auth/apple` | Sign in / register with Apple identity token `[public]` |
+| POST | `/auth/google` | Sign in / register with Google ID token `[public]` |
+| POST | `/auth/refresh` | Refresh JWT using a refresh token `[public]` |
 
 ### Users
 
@@ -224,110 +281,138 @@ Authentication uses **Bearer JWT** in the `Authorization` header unless marked `
 |---|---|---|
 | GET | `/users/me` | Get current user profile |
 | PUT | `/users/me` | Update profile |
-| POST | `/users/me/avatar` | Upload avatar |
+| POST | `/users/me/avatar` | Upload avatar image |
 | GET | `/users/{id}` | Get public profile |
-| GET | `/users/search?q=` | Search users |
-| POST | `/users/me/push-token` | Register APNs push token |
+| GET | `/users/search?q=` | Search users by name/username |
 
 ### Crew (Friends)
 
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/crew` | List crew members |
-| POST | `/crew/request` | Send crew request |
-| PUT | `/crew/{id}/accept` | Accept crew request |
-| DELETE | `/crew/{id}` | Remove crew member |
+| GET | `/crew` | List current user's crew members |
+| POST | `/crew/{user_id}` | Send / accept crew request |
+| DELETE | `/crew/{user_id}` | Remove crew member |
+
+### Vessels (Boats)
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/vessels` | List current user's vessels |
+| POST | `/vessels` | Create a new vessel |
+| PUT | `/vessels/{id}` | Update vessel details |
+| PUT | `/vessels/{id}/default` | Set vessel as default |
+| DELETE | `/vessels/{id}` | Delete vessel |
+
+### Clubs
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/clubs` | List clubs |
+| POST | `/clubs` | Create a club |
+| DELETE | `/clubs/{id}` | Delete a club |
 
 ### Rivers
 
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/rivers` | List/search rivers `[public]` |
-| GET | `/rivers/{id}` | Get river detail `[public]` |
-| GET | `/rivers/nearby?lat=&lng=&radius=` | Rivers near coordinates `[public]` |
-| POST | `/rivers` | Create river (admin) |
-| PUT | `/rivers/{id}` | Update river (admin) |
+| GET | `/rivers` | List rivers |
+| GET | `/rivers/search?q=` | Search rivers |
+| GET | `/rivers/{id}` | Get river detail |
+| GET | `/rivers/{id}/gauge` | Get gauge data for a river |
+| GET | `/rivers/{id}/hazards` | Get hazards on a river |
+| GET | `/rivers/{id}/runs` | Get run logs for a river |
+| GET | `/rivers/{id}/feed` | Get social feed for a river |
+| GET | `/rivers/{id}/videos` | Get videos for a river |
 
-### Run Logs
+### Runs (Run Logs)
 
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/run-logs` | List current user's runs |
-| POST | `/run-logs` | Create run log |
-| GET | `/run-logs/{id}` | Get run log detail |
-| PUT | `/run-logs/{id}` | Update run log |
-| DELETE | `/run-logs/{id}` | Delete run log |
-| POST | `/run-logs/{id}/skills` | Update skills for run |
+| GET | `/runs/me` | List current user's runs |
+| POST | `/runs` | Create a run log |
+| GET | `/runs/{id}` | Get run log detail |
+| PUT | `/runs/{id}` | Update run log |
+| POST | `/runs/{id}/skills` | Log skills for a run |
+| POST | `/runs/{id}/media` | Upload photo/video for a run |
+| POST | `/runs/{id}/hazard-report` | Submit hazard report from a run |
+| POST | `/runs/{id}/injury-report` | Submit injury report from a run |
 
 ### Hazards
 
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/hazards?river_id=` | List hazards for river `[public]` |
-| POST | `/hazards` | Report new hazard |
-| POST | `/hazards/{id}/verify` | Verify/update hazard status |
+| GET | `/hazards` | List hazards (filterable by query params) |
+| POST | `/hazards` | Report a new hazard |
+| PUT | `/hazards/{id}/verify` | Verify/confirm a hazard |
+| PUT | `/hazards/{id}/clear` | Mark a hazard as cleared |
 
-### Posts & Social
+### Feed & Posts (Social)
 
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/feed` | Social feed (crew + public) |
-| POST | `/posts` | Create post |
-| GET | `/posts/{id}` | Get post |
-| DELETE | `/posts/{id}` | Delete post |
-| POST | `/posts/{id}/like` | Like post |
-| DELETE | `/posts/{id}/like` | Unlike post |
-| GET | `/posts/{id}/comments` | List comments |
-| POST | `/posts/{id}/comments` | Add comment |
-| DELETE | `/comments/{id}` | Delete comment |
+| GET | `/feed` | Social feed (public + crew) |
+| GET | `/feed/crew` | Crew-only feed |
+| GET | `/posts/{id}/comments` | List comments on a post |
+| POST | `/posts/{id}/comments` | Add a comment |
+| POST | `/posts/{id}/like` | Like a post |
 
 ### Messages
 
 | Method | Endpoint | Description |
 |---|---|---|
 | GET | `/messages` | List conversations |
-| GET | `/messages/{user_id}` | Get thread with user |
-| POST | `/messages` | Send message |
-| PUT | `/messages/{id}/read` | Mark as read |
+| GET | `/messages/{user_id}` | Get message thread with a user |
+| POST | `/messages/{user_id}` | Send a message to a user |
 
 ### Events
 
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/events` | List upcoming events `[public]` |
-| GET | `/events/{id}` | Get event detail `[public]` |
-| POST | `/events` | Create event |
+| GET | `/events` | List upcoming events |
+| POST | `/events` | Create an event |
 
-### Gauge Data
-
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/gauge/{site_id}?source=usgs` | Get gauge reading `[public]` |
-| GET | `/rivers/{id}/gauge` | Get gauge for river `[public]` |
-
-### Achievements & Notifications
+### Skills
 
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/achievements` | List all achievements `[public]` |
-| GET | `/users/me/achievements` | Current user's unlocked achievements |
+| GET | `/skills` | List all skill definitions |
+| GET | `/skills/defaults` | Get current user's default skills |
+| PUT | `/skills/defaults` | Update current user's default skills |
+
+### Gauges
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/gauges/{site_id}` | Get gauge reading by site ID |
+| GET | `/gauges/{site_id}/forecast` | Get gauge forecast |
+
+### Achievements
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/achievements/me` | Current user's unlocked achievements |
+| GET | `/achievements/check` | Check for newly earned achievements |
+
+### Notifications
+
+| Method | Endpoint | Description |
+|---|---|---|
 | GET | `/notifications` | List notifications |
-| PUT | `/notifications/{id}/read` | Mark notification read |
-| PUT | `/notifications/read-all` | Mark all read |
+| PUT | `/notifications/{id}/read` | Mark notification as read |
+| POST | `/notifications/dam-release` | Trigger dam-release notification |
 
 ---
 
 ## Security Checklist
 
 - [ ] **Change JWT secret** — set a random 256-bit value in `config/config.php`; never use the placeholder
-- [ ] **Change DB password** — use a strong, unique password; do not reuse credentials
-- [ ] **Restrict CORS** — update `CORS_ALLOWED_ORIGINS` to only your iOS app's domain / bundle ID origin
+- [ ] **Change DB credentials** — update `$username` and `$password` in `config/database.php` with strong, unique values
 - [ ] **Force HTTPS** — enable in hPanel SSL settings and in `.htaccess`
 - [ ] **Disable directory listing** — `Options -Indexes` in `.htaccess`
 - [ ] **Remove `migrations/` from `public_html`** — never expose SQL files publicly
 - [ ] **Use prepared statements** — all database queries must use PDO with bound parameters (no raw interpolation)
 - [ ] **Validate & sanitize all inputs** — check types, lengths, and enum values on every endpoint
-- [ ] **Rate-limit `/auth/login`** — prevent brute-force attacks (e.g., 10 attempts / minute per IP)
+- [ ] **Rate limiting is enabled by default** — configured via `RATE_LIMIT_REQUESTS` and `RATE_LIMIT_WINDOW` in `config.php`
 - [ ] **Set `APP_ENV=production`** — disables verbose error output
 - [ ] **Rotate JWT secret periodically** — all active sessions will require re-login after rotation
 - [ ] **Enable MySQL SSL** — if Hostinger plan supports remote DB connections with TLS
@@ -342,8 +427,8 @@ Authentication uses **Bearer JWT** in the `Authorization` header unless marked `
 - Check PHP error log: hPanel → **Logs → Error Logs**.
 
 ### `SQLSTATE[HY000] [2002] Connection refused`
-- Confirm `DB_HOST` is `localhost` (not `127.0.0.1`) for shared hosting.
-- Verify database name, username, and password match exactly what was created in hPanel.
+- Confirm `$host` is `'localhost'` (not `'127.0.0.1'`) in `config/database.php` for shared hosting.
+- Verify `$db_name`, `$username`, and `$password` match exactly what was created in hPanel.
 
 ### `SQLSTATE[42000]: Syntax error` on import
 - Ensure the SQL file is saved in **UTF-8 without BOM**.
@@ -351,13 +436,13 @@ Authentication uses **Bearer JWT** in the `Authorization` header unless marked `
 
 ### JWT `401 Unauthorized` on every request
 - Confirm the iOS app is sending the header: `Authorization: Bearer <token>`.
-- Check that `JWT_SECRET` in `config.php` matches the value used to sign tokens.
-- Tokens expire after `JWT_EXPIRY_SECONDS`; call `/auth/refresh` to renew.
+- Check that `JWT_SECRET` in `config/config.php` matches the value used to sign tokens.
+- Access tokens expire after `JWT_EXPIRY` (7 days by default); call `/auth/refresh` to renew.
 
 ### Images/videos not uploading
 - Check `upload_max_filesize` and `post_max_size` in PHP configuration (hPanel → PHP Configuration → Additional settings).
 - Ensure the `uploads/` directory exists and is **writable** (`chmod 755`).
-- Confirm `UPLOAD_MAX_MB` in `config.php` matches the PHP limits.
+- Confirm `MAX_FILE_SIZE` and `MAX_VIDEO_SIZE` in `config/config.php` match the PHP limits.
 
 ### APNs push notifications not delivering
 - Verify the `.p8` APNs key is uploaded to the server and the path is correct in config.
