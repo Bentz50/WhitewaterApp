@@ -43,4 +43,11 @@ struct River: Codable, Identifiable {
     let noaaGageId: String?
     let tags: [String]
     let isRunnable: Bool?
+    let sections: [RiverSection]?
+
+    /// Whether this river has been broken down into runnable sections.
+    var hasSections: Bool {
+        guard let sections else { return false }
+        return !sections.isEmpty
+    }
 }

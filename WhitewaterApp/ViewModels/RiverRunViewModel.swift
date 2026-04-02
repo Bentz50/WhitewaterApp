@@ -20,6 +20,7 @@ final class RiverRunViewModel: ObservableObject {
     // MARK: - Published State
 
     @Published var river: River?
+    @Published var section: RiverSection?
     @Published var gaugeData: GaugeData?
     @Published var hazards: [Hazard] = []
     @Published var beaterFeed: [RiverPost] = []
@@ -51,6 +52,27 @@ final class RiverRunViewModel: ObservableObject {
             await loadVideos()
         } catch {
             // Non-fatal: river may already be set from navigation context
+        }
+    }
+
+    // MARK: - Section Loading
+
+    func loadSection(riverId: Int, sectionId: Int) async {
+        isLoading = true
+        defer { isLoading = false }
+        do {
+            section = try await api.get(
+                "/rivers/\(riverId)/sections/\(sectionId)",
+                responseType: RiverSection.self
+            )
+            if river == nil {
+                river = try await api.get("/rivers/\(riverId)", responseType: River.self)
+            }
+            await refreshSectionGauge(riverId: riverId, sectionId: sectionId)
+            await loadSectionHazards(riverId: riverId, sectionId: sectionId)
+            await loadSectionVideos(riverId: riverId, sectionId: sectionId)
+        } catch {
+            // Non-fatal: section may already be set from navigation context
         }
     }
 
@@ -91,6 +113,7 @@ final class RiverRunViewModel: ObservableObject {
             id: 0,
             userId: 0,
             riverId: river.id,
+            sectionId: section?.id,
             vesselId: 0,
             startTime: Date().addingTimeInterval(-Double(duration)),
             endTime: Date(),
@@ -161,6 +184,46 @@ final class RiverRunViewModel: ObservableObject {
         guard let river else { return }
         do {
             var path = "/rivers/\(river.id)/videos"
+            if let level = gaugeData?.gageHeightFt {
+                path += "?level=\(level)"
+            }
+            videos = try await api.get(path, responseType: [RiverVideo].self)
+        } catch {
+            videos = []
+        }
+    }
+
+    // MARK: - Section-Specific Loading
+
+    private func refreshSectionGauge(riverId: Int, sectionId: Int) async {
+        do {
+            if let siteId = section?.usgsSiteId {
+                gaugeData = try await gauge.fetchUSGSGauge(siteId: siteId)
+            } else {
+                gaugeData = try await api.get(
+                    "/rivers/\(riverId)/sections/\(sectionId)/gauge",
+                    responseType: GaugeData.self
+                )
+            }
+        } catch {
+            gaugeData = gauge.getCachedGauge(siteId: section?.usgsSiteId ?? "")
+        }
+    }
+
+    private func loadSectionHazards(riverId: Int, sectionId: Int) async {
+        do {
+            hazards = try await api.get(
+                "/rivers/\(riverId)/sections/\(sectionId)/hazards",
+                responseType: [Hazard].self
+            )
+        } catch {
+            hazards = []
+        }
+    }
+
+    private func loadSectionVideos(riverId: Int, sectionId: Int) async {
+        do {
+            var path = "/rivers/\(riverId)/sections/\(sectionId)/videos"
             if let level = gaugeData?.gageHeightFt {
                 path += "?level=\(level)"
             }

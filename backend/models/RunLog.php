@@ -4,17 +4,18 @@
 class RunLog {
     public static function create(PDO $db, array $data): int {
         $sql = 'INSERT INTO run_logs
-                    (user_id, river_id, vessel_id, start_time, end_time,
+                    (user_id, river_id, section_id, vessel_id, start_time, end_time,
                      distance_miles, duration_seconds, calories_burned, privacy,
                      start_gauge_level, end_gauge_level, gps_track, notes, created_at)
                 VALUES
-                    (:user_id, :river_id, :vessel_id, :start_time, :end_time,
+                    (:user_id, :river_id, :section_id, :vessel_id, :start_time, :end_time,
                      :distance_miles, :duration_seconds, :calories_burned, :privacy,
                      :start_gauge_level, :end_gauge_level, :gps_track, :notes, NOW())';
         $stmt = $db->prepare($sql);
         $stmt->execute([
             ':user_id'            => $data['user_id'],
             ':river_id'           => $data['river_id']           ?? null,
+            ':section_id'         => $data['section_id']         ?? null,
             ':vessel_id'          => $data['vessel_id']          ?? null,
             ':start_time'         => $data['start_time']         ?? null,
             ':end_time'           => $data['end_time']           ?? null,
@@ -32,10 +33,11 @@ class RunLog {
 
     public static function findById(PDO $db, int $id): ?array {
         $stmt = $db->prepare(
-            'SELECT rl.*, r.name AS river_name, v.name AS vessel_name
+            'SELECT rl.*, r.name AS river_name, v.name AS vessel_name, rs.name AS section_name
              FROM run_logs rl
              LEFT JOIN rivers r ON r.id = rl.river_id
              LEFT JOIN vessels v ON v.id = rl.vessel_id
+             LEFT JOIN river_sections rs ON rs.id = rl.section_id
              WHERE rl.id = :id LIMIT 1'
         );
         $stmt->execute([':id' => $id]);

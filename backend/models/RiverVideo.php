@@ -41,11 +41,12 @@ class RiverVideo {
     }
 
     public static function create(PDO $db, array $data): int {
-        $sql = 'INSERT INTO river_videos (river_id, title, url, min_level, max_level, submitted_by, created_at)
-                VALUES (:river_id, :title, :url, :min_level, :max_level, :submitted_by, NOW())';
+        $sql = 'INSERT INTO river_videos (river_id, section_id, title, url, min_level, max_level, submitted_by, created_at)
+                VALUES (:river_id, :section_id, :title, :url, :min_level, :max_level, :submitted_by, NOW())';
         $stmt = $db->prepare($sql);
         $stmt->execute([
             ':river_id'     => $data['river_id'],
+            ':section_id'   => $data['section_id'] ?? null,
             ':title'        => $data['title'],
             ':url'          => $data['url'],
             ':min_level'    => $data['min_level'] ?? null,
