@@ -111,9 +111,13 @@ git clone https://github.com/BentzTech/WhitewaterApp.git
 open WhitewaterApp.xcodeproj
 ```
 
-Edit `WhitewaterApp/Config/APIConfig.swift`:
+Edit `WhitewaterApp/Config/APIConfig.swift` and set `baseURL` to match your deployment:
 ```swift
-static let baseURL = "https://api.your-domain.com/v1"
+// If your backend is deployed at public_html/api/ (as described in DEPLOYMENT.md):
+static let baseURL = "https://your-domain.com/api/v1"
+
+// Or if using a subdomain that points directly to the backend:
+// static let baseURL = "https://api.your-domain.com/v1"
 ```
 
 Set your Apple Developer Team and Bundle ID (`com.bentztech.whitewaterapp`) in Xcode Signing & Capabilities, then run on iOS 17+ simulator or device.
