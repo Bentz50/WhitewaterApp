@@ -21,6 +21,25 @@ class RiverVideo {
         return $stmt->fetchAll();
     }
 
+    public static function findBySectionId(PDO $db, int $sectionId, ?float $level = null): array {
+        if ($level !== null) {
+            $stmt = $db->prepare(
+                'SELECT * FROM river_videos
+                 WHERE section_id = :sid
+                   AND (min_level IS NULL OR min_level <= :lvl1)
+                   AND (max_level IS NULL OR max_level >= :lvl2)
+                 ORDER BY created_at DESC'
+            );
+            $stmt->execute([':sid' => $sectionId, ':lvl1' => $level, ':lvl2' => $level]);
+        } else {
+            $stmt = $db->prepare(
+                'SELECT * FROM river_videos WHERE section_id = :sid ORDER BY created_at DESC'
+            );
+            $stmt->execute([':sid' => $sectionId]);
+        }
+        return $stmt->fetchAll();
+    }
+
     public static function create(PDO $db, array $data): int {
         $sql = 'INSERT INTO river_videos (river_id, title, url, min_level, max_level, submitted_by, created_at)
                 VALUES (:river_id, :title, :url, :min_level, :max_level, :submitted_by, NOW())';

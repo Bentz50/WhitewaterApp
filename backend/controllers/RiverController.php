@@ -2,6 +2,7 @@
 // Copyright © 2026 BentzTech LLC. All rights reserved.
 
 require_once __DIR__ . '/../models/River.php';
+require_once __DIR__ . '/../models/RiverSection.php';
 require_once __DIR__ . '/../models/Hazard.php';
 require_once __DIR__ . '/../models/RunLog.php';
 require_once __DIR__ . '/../models/RiverVideo.php';
@@ -34,7 +35,7 @@ class RiverController {
     }
 
     public function show(int $id): void {
-        $river = River::findById($this->db, $id);
+        $river = River::findByIdWithSections($this->db, $id);
         if (!$river) {
             Response::error('River not found', 404);
         }
@@ -182,6 +183,75 @@ class RiverController {
 
         $level = Validator::sanitizeFloat($params['level'] ?? null);
         $videos = RiverVideo::findByRiverId($this->db, $id, $level);
+        Response::success($videos);
+    }
+
+    // ── Section Endpoints ────────────────────────────────────────────
+
+    public function getSections(int $id): void {
+        $river = River::findById($this->db, $id);
+        if (!$river) {
+            Response::error('River not found', 404);
+        }
+        $sections = RiverSection::findByRiverId($this->db, $id);
+        Response::success($sections);
+    }
+
+    public function showSection(int $riverId, int $sectionId): void {
+        $section = RiverSection::findById($this->db, $sectionId);
+        if (!$section || (int) $section['river_id'] !== $riverId) {
+            Response::error('Section not found', 404);
+        }
+        Response::success($section);
+    }
+
+    public function getSectionGauge(int $riverId, int $sectionId): void {
+        $section = RiverSection::findById($this->db, $sectionId);
+        if (!$section || (int) $section['river_id'] !== $riverId) {
+            Response::error('Section not found', 404);
+        }
+
+        $siteId = $section['usgs_site_id'] ?? null;
+        if (!$siteId) {
+            // Fall back to parent river gauge
+            $river = River::findById($this->db, $riverId);
+            $siteId = $river['usgs_site_id'] ?? null;
+        }
+        if (!$siteId) {
+            Response::error('No gauge configured for this section', 404);
+        }
+
+        $cached = GaugeProxy::getCached($siteId, 'usgs');
+        if ($cached) {
+            Response::success($cached);
+        }
+
+        try {
+            $data = GaugeProxy::fetchUSGS($siteId);
+            GaugeProxy::setCache($siteId, 'usgs', $data);
+            Response::success($data);
+        } catch (RuntimeException $e) {
+            Response::error('Failed to fetch gauge data', 503);
+        }
+    }
+
+    public function getSectionHazards(int $riverId, int $sectionId): void {
+        $section = RiverSection::findById($this->db, $sectionId);
+        if (!$section || (int) $section['river_id'] !== $riverId) {
+            Response::error('Section not found', 404);
+        }
+        $hazards = Hazard::findBySectionId($this->db, $sectionId);
+        Response::success($hazards);
+    }
+
+    public function getSectionVideos(int $riverId, int $sectionId, array $params): void {
+        $section = RiverSection::findById($this->db, $sectionId);
+        if (!$section || (int) $section['river_id'] !== $riverId) {
+            Response::error('Section not found', 404);
+        }
+
+        $level = Validator::sanitizeFloat($params['level'] ?? null);
+        $videos = RiverVideo::findBySectionId($this->db, $sectionId, $level);
         Response::success($videos);
     }
 }

@@ -27,6 +27,14 @@ class Hazard {
         return $stmt->fetchAll();
     }
 
+    public static function findBySectionId(PDO $db, int $sectionId): array {
+        $stmt = $db->prepare(
+            "SELECT * FROM hazards WHERE section_id = :sid AND status != 'cleared' ORDER BY created_at DESC"
+        );
+        $stmt->execute([':sid' => $sectionId]);
+        return $stmt->fetchAll();
+    }
+
     public static function create(PDO $db, array $data): int {
         $sql = 'INSERT INTO hazards
                     (user_id, river_id, type, description, lat, lng, status, last_observed, created_at)
