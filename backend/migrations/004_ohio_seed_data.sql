@@ -1,13 +1,13 @@
 -- Copyright © 2026 BentzTech LLC. All rights reserved.
 -- Migration: Seed Ohio river & section data from American Whitewater
 -- Source: American Whitewater National Whitewater Inventory (americanwhitewater.org)
--- Version: 1.3.0
+-- Version: 1.4.0
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- =============================================================
--- Ohio Rivers (IDs 16–21)
+-- Ohio Rivers (IDs 16–22)
 -- =============================================================
 INSERT INTO rivers (id, name, state, region, lat, lng, put_in_lat, put_in_lng, take_out_lat, take_out_lng, aw_rating, length_miles, description, usgs_site_id, tags, is_runnable) VALUES
   -- 16. Cuyahoga River — AW: Multiple sections from Kent through the Gorge
@@ -105,6 +105,22 @@ INSERT INTO rivers (id, name, state, region, lat, lng, put_in_lat, put_in_lng, t
     '03230500',
     '["scenic river","national scenic river","biodiversity","Ohio","Columbus area","wildlife","clean water","hidden gem"]',
     1
+  ),
+  -- 22. Tinkers Creek — AW: Class IV–V steep creek through Bedford Reservation
+  (
+    22,
+    'Tinkers Creek',
+    'Ohio',
+    'Bedford Reservation / Cuyahoga Valley National Park',
+    41.3910000, -81.5375000,
+    41.3910000, -81.5375000,
+    41.3750000, -81.5758000,
+    'V',
+    4.50,
+    'Northeast Ohio''s premier steep creek and one of the most challenging whitewater runs in the state. Tinkers Creek drops through a dramatic gorge in the Cleveland Metroparks Bedford Reservation before flowing into the Cuyahoga Valley National Park. The "meat" section averages an incredible 165 feet per mile of gradient over its steepest stretch, featuring slides, drops, a 20-foot waterfall, and a tunnel section. The creek is entirely rain-dependent and flashy—rising and falling quickly after storms. Best run in fall through spring when significant rainfall pushes flows above 250 CFS. Popular with advanced paddlers from the Keel-Haulers Canoe Club and the broader Northeast Ohio creek boating community. Expert skills required.',
+    '04207200',
+    '["steep creek","expert","waterfall","Class V","rain dependent","gorge","Bedford Reservation","Keel-Haulers","Cleveland","flashy"]',
+    NULL
   );
 
 -- =============================================================
@@ -266,6 +282,23 @@ INSERT INTO river_sections (river_id, name, section_label, description, put_in_l
     '03230500',
     '["scenic river","biodiversity","Columbus area","spring","clean water","wildlife","hidden gem","Ohio"]',
     1,
+    1
+  );
+
+-- ── Tinkers Creek sections (river_id=22) ──────────────────────
+INSERT INTO river_sections (river_id, name, section_label, description, put_in_lat, put_in_lng, take_out_lat, take_out_lng, aw_rating, length_miles, usgs_site_id, tags, is_runnable, sort_order) VALUES
+  (
+    22,
+    'Tinkers Creek Gorge (Broadway to Dunham Road)',
+    'Gorge Run (Broadway to Dunham)',
+    'The full Tinkers Creek gorge run from Broadway Trailhead to Dunham Road in Bedford Reservation. Approximately 4.5 miles of Class IV–V steep creek through a dramatic wooded gorge. Features include the "meat" section with a gradient of 165 feet per mile, a 20-foot waterfall (runnable at appropriate flows with proper scouting), slides, ledge drops, and a unique tunnel section. The creek is entirely rain-dependent and flashy—check the USGS gauge (04207200) before heading out, with a minimum of 250 CFS recommended for the meat section and 450–1,000 CFS for the full run. Expert paddlers only. Hazards include strainers, undercut rocks, and the waterfall. Put-in at Broadway Trailhead (Cleveland Metroparks), take-out at Dunham Road bridge near Hemlock Creek Picnic Area.',
+    41.3910000, -81.5375000,
+    41.3750000, -81.5758000,
+    'V',
+    4.50,
+    '04207200',
+    '["steep creek","gorge","waterfall","expert","rain dependent","slides","tunnel","Class V","Cleveland"]',
+    NULL,
     1
   );
 
