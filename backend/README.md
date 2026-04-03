@@ -105,8 +105,7 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 ```
 backend/
 ├── migrations/
-│   ├── 001_initial_schema.sql   # Full DB schema + seed data
-│   └── 002_third_party_auth.sql # Apple/Google auth columns
+│   └── database.sql             # Complete DB schema + all seed data (single file)
 ├── config/
 │   ├── database.php             # PDO connection singleton (Database class)
 │   └── config.php               # App-wide constants (JWT secret, rate limits, etc.)
@@ -245,7 +244,7 @@ define('APNS_TOPIC', 'com.bentztech.whitewaterapp');
 1. In hPanel, go to **Hosting → Manage → Databases → phpMyAdmin** and click **Enter phpMyAdmin**.
 2. In the left panel, select your database (e.g., `u123456789_whitewaterapp`).
 3. Click the **Import** tab at the top.
-4. Under **File to Import**, click **Choose File** and select `backend/migrations/001_initial_schema.sql`.
+4. Under **File to Import**, click **Choose File** and select `backend/migrations/database.sql`.
 5. Ensure:
    - **Character set of the file:** `utf8mb4`
    - **Format:** SQL
@@ -255,7 +254,7 @@ define('APNS_TOPIC', 'com.bentztech.whitewaterapp');
    ```sql
    SELECT COUNT(*) FROM skills;       -- should be 33
    SELECT COUNT(*) FROM achievements; -- should be 14
-   SELECT COUNT(*) FROM rivers;       -- should be 5
+   SELECT COUNT(*) FROM rivers;       -- should be 110
    ```
 
 ---

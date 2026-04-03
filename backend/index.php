@@ -153,10 +153,21 @@ switch ($resource) {
         $controller = new RiverController();
         $id  = isset($segments[1]) && $segments[1] !== 'search' ? (int) $segments[1] : null;
         $sub = $segments[2] ?? '';
+        $sub2 = $segments[3] ?? '';
+        $sub3 = $segments[4] ?? '';
         if ($segments[1] === 'search') {
             $controller->search($params);
         } elseif ($id === null) {
             $controller->index($params);
+        } elseif ($sub === 'sections' && $sub2 === '') {
+            $controller->getSections($id);
+        } elseif ($sub === 'sections' && $sub2 !== '') {
+            $sectionId = (int) $sub2;
+            if ($sub3 === 'gauge')        { $controller->getSectionGauge($id, $sectionId); }
+            elseif ($sub3 === 'hazards')  { $controller->getSectionHazards($id, $sectionId); }
+            elseif ($sub3 === 'videos')   { $controller->getSectionVideos($id, $sectionId, $params); }
+            elseif ($sub3 === '')         { $controller->showSection($id, $sectionId); }
+            else                          { Response::error('Not found', 404); }
         } elseif ($sub === 'gauge')   { $controller->getGauge($id); }
         elseif ($sub === 'hazards')   { $controller->getHazards($id); }
         elseif ($sub === 'runs')      { $controller->getRuns($id, $params, $auth); }

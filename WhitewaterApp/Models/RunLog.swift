@@ -12,6 +12,7 @@ struct RunLog: Codable, Identifiable {
     let id: Int
     let userId: Int
     let riverId: Int
+    let sectionId: Int?
     let vesselId: Int
     let startTime: Date
     let endTime: Date

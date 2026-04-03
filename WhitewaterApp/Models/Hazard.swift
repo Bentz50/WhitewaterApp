@@ -30,6 +30,7 @@ enum HazardStatus: String, Codable {
 struct Hazard: Codable, Identifiable {
     let id: Int
     let riverId: Int
+    let sectionId: Int?
     let reportedBy: Int
     let lat: Double
     let lng: Double

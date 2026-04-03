@@ -1,12 +1,26 @@
 <?php
 // Copyright © 2026 BentzTech LLC. All rights reserved.
 
+require_once __DIR__ . '/RiverSection.php';
+
 class River {
     public static function findById(PDO $db, int $id): ?array {
         $stmt = $db->prepare('SELECT * FROM rivers WHERE id = :id LIMIT 1');
         $stmt->execute([':id' => $id]);
         $row = $stmt->fetch();
         return $row ?: null;
+    }
+
+    /**
+     * Find a river by ID with its sections included.
+     */
+    public static function findByIdWithSections(PDO $db, int $id): ?array {
+        $river = self::findById($db, $id);
+        if (!$river) {
+            return null;
+        }
+        $river['sections'] = RiverSection::findByRiverId($db, $id);
+        return $river;
     }
 
     /**
