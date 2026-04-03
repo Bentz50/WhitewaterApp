@@ -2,16 +2,21 @@
 // Copyright © 2026 BentzTech LLC. All rights reserved.
 
 class Database {
-    private string $host     = 'localhost';
-    private string $db_name  = 'whitewaterapp_db';
-    private string $username = 'YOUR_DB_USER';     // TODO: replace with real credentials
-    private string $password = 'YOUR_DB_PASSWORD'; // TODO: replace
-    private string $charset  = 'utf8mb4';
+    private string $host;
+    private string $db_name;
+    private string $username;
+    private string $password;
+    private string $charset = 'utf8mb4';
 
     private static ?Database $instance = null;
     private ?PDO $conn = null;
 
-    private function __construct() {}
+    private function __construct() {
+        $this->host     = getenv('DB_HOST')     ?: 'localhost';
+        $this->db_name  = getenv('DB_NAME')     ?: 'whitewaterapp_db';
+        $this->username = getenv('DB_USER')     ?: 'root';
+        $this->password = getenv('DB_PASSWORD') ?: '';
+    }
 
     public static function getInstance(): self {
         if (self::$instance === null) {
@@ -46,5 +51,20 @@ class Database {
     /** Alias for getConnection(). */
     public function getConn(): PDO {
         return $this->getConnection();
+    }
+
+    /** Begin a database transaction. */
+    public function beginTransaction(): void {
+        $this->getConnection()->beginTransaction();
+    }
+
+    /** Commit the current transaction. */
+    public function commit(): void {
+        $this->getConnection()->commit();
+    }
+
+    /** Rollback the current transaction. */
+    public function rollback(): void {
+        $this->getConnection()->rollBack();
     }
 }
