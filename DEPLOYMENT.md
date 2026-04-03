@@ -63,9 +63,9 @@ define('CORS_ALLOWED_ORIGINS', ['https://your-domain.com']);
 ### A5. Import the Database Schema (phpMyAdmin)
 1. In hPanel go to **Databases → phpMyAdmin → Enter phpMyAdmin**.
 2. Select your database in the left panel.
-3. Click **Import → Choose File** and select `backend/migrations/001_initial_schema.sql`.
+3. Click **Import → Choose File** and select `backend/migrations/database.sql`.
 4. Set charset to `utf8mb4`, format to `SQL`, then click **Go**.
-5. Verify: 25 tables, 33 skills rows, 14 achievements rows, 5 rivers rows.
+5. Verify: 25 tables, 33 skills rows, 14 achievements rows, 110 rivers rows.
 
 ### A6. Enable SSL / HTTPS
 1. Go to **Hosting → Manage → SSL**.
