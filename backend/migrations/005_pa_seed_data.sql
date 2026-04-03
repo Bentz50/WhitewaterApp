@@ -688,7 +688,7 @@ INSERT INTO river_sections (river_id, name, section_label, description, put_in_l
     'Portland Mills to Cooksburg (Cook Forest)',
     'Middle Clarion (Portland Mills to Cooksburg)',
     'The most popular section of the Clarion River—approximately 15 miles of Class I–II paddling from Portland Mills through Cook Forest State Park to Cooksburg. Features gentle riffles, small waves, and outstanding scenery through one of the finest old-growth forests in the eastern United States. The river''s exceptionally clear water, hemlock and pine-lined banks, and abundant wildlife (bald eagles, river otters, great blue herons) make this one of the premier scenic paddles in Pennsylvania. Well-maintained public launches at Portland Mills, Clear Creek, Cook Forest, and Cooksburg. Check the USGS gauge at Cooksburg (03029500) for optimal flows.',
-    41.3306000, -79.2092000,
+    41.2050000, -79.2350000,
     41.3306000, -79.2092000,
     'II',
     15.00,
@@ -707,7 +707,7 @@ INSERT INTO river_sections (river_id, name, section_label, description, put_in_l
     'I',
     13.00,
     '03029500',
-    '["scenic","gentle","family","multi-day","camping","canoe","rural","Clear water","Pennsylvania"]',
+    '["scenic","gentle","family","multi-day","camping","canoe","rural","clear water","Pennsylvania"]',
     1,
     2
   );
