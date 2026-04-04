@@ -5,9 +5,6 @@ class User {
     use BaseModel;
     const TABLE = 'users';
 
-    // Override findById from trait since User has the same pattern
-    // (BaseModel::findById is used via the trait)
-
     public static function findByEmail(PDO $db, string $email): ?array {
         $stmt = $db->prepare('SELECT * FROM users WHERE email = :email LIMIT 1');
         $stmt->execute([':email' => $email]);

@@ -2,7 +2,18 @@
 // Copyright © 2026 BentzTech LLC. All rights reserved.
 
 // Application configuration – all secrets are loaded from environment variables.
-define('JWT_SECRET',            getenv('JWT_SECRET')            ?: 'CHANGE_THIS_TO_A_RANDOM_SECRET_KEY_MIN_32_CHARS');
+$jwtSecret = getenv('JWT_SECRET');
+if (!$jwtSecret || $jwtSecret === 'CHANGE_THIS_TO_A_RANDOM_SECRET_KEY_MIN_32_CHARS') {
+    $appEnv = getenv('APP_ENV') ?: 'production';
+    if ($appEnv === 'production') {
+        error_log('[FATAL] JWT_SECRET environment variable is not set. Application cannot start securely.');
+        http_response_code(500);
+        exit('Server configuration error');
+    }
+    // Allow fallback only in non-production environments
+    $jwtSecret = 'CHANGE_THIS_TO_A_RANDOM_SECRET_KEY_MIN_32_CHARS';
+}
+define('JWT_SECRET',            $jwtSecret);
 define('JWT_EXPIRY',            (int) (getenv('JWT_EXPIRY')     ?: 86400 * 7));          // 7 days
 define('REFRESH_TOKEN_EXPIRY',  (int) (getenv('REFRESH_TOKEN_EXPIRY') ?: 86400 * 30));   // 30 days
 define('APP_ENV',               getenv('APP_ENV')               ?: 'production');

@@ -40,11 +40,6 @@ class FileUpload {
             throw new RuntimeException('Unsupported MIME type: ' . $mimeType);
         }
 
-        // Verify that the original file extension matches the detected MIME type
-        $originalExt = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        $expectedExts = array_keys(array_filter(self::MIME_EXT_MAP, fn($v) => $v === $ext));
-        // Allow mismatch silently (e.g. .jpeg vs image/jpeg), but enforce MIME type is correct
-
         $isVideo = in_array($mimeType, self::VIDEO_TYPES, true);
         $maxSize = $isVideo ? MAX_VIDEO_SIZE : MAX_FILE_SIZE;
 
