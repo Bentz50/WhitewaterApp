@@ -36,7 +36,7 @@ struct ActiveRunView: View {
                     Spacer()
                     VStack(spacing: 2) {
                         Text(formattedElapsed)
-                            .font(.system(size: 48, weight: .bold, design: .monospaced))
+                            .font(.system(size: LayoutConstants.elapsedTimeFontSize, weight: .bold, design: .monospaced))
                             .foregroundStyle(.white)
                         Text("ELAPSED")
                             .font(.caption2.weight(.semibold))
@@ -52,10 +52,10 @@ struct ActiveRunView: View {
 
                 // Metrics row
                 HStack(spacing: 0) {
-                    MetricCell(value: String(format: "%.2f", viewModel.distanceMiles), unit: "mi")
-                    Divider().frame(height: 40)
-                    MetricCell(value: String(format: "%.1f", viewModel.currentSpeedMph), unit: "mph")
-                    Divider().frame(height: 40)
+                    MetricCell(value: viewModel.distanceMiles.formattedDistance, unit: "mi")
+                    Divider().frame(height: LayoutConstants.metricDividerHeight)
+                    MetricCell(value: viewModel.currentSpeedMph.formattedSpeed, unit: "mph")
+                    Divider().frame(height: LayoutConstants.metricDividerHeight)
                     MetricCell(value: "\(viewModel.caloriesBurned)", unit: "cal")
                 }
                 .frame(maxWidth: .infinity)
@@ -64,16 +64,8 @@ struct ActiveRunView: View {
                 // Action bar
                 HStack(spacing: 20) {
                     // Beaters feed
-                    Button {
+                    ActionIconButton(icon: "bubble.left.and.bubble.right.fill", label: "Beaters") {
                         showBeaterFeed = true
-                    } label: {
-                        VStack(spacing: 4) {
-                            Image(systemName: "bubble.left.and.bubble.right.fill")
-                                .font(.title2)
-                            Text("Beaters")
-                                .font(.caption2)
-                        }
-                        .foregroundStyle(Color.appTeal)
                     }
 
                     Spacer()
@@ -94,29 +86,13 @@ struct ActiveRunView: View {
                     Spacer()
 
                     // Gauge refresh
-                    Button {
+                    ActionIconButton(icon: "arrow.clockwise", label: "Gauge") {
                         Task { await viewModel.refreshGauge() }
-                    } label: {
-                        VStack(spacing: 4) {
-                            Image(systemName: "arrow.clockwise")
-                                .font(.title2)
-                            Text("Gauge")
-                                .font(.caption2)
-                        }
-                        .foregroundStyle(Color.appTeal)
                     }
 
                     // Weather
-                    Button {
+                    ActionIconButton(icon: "cloud.sun.fill", label: "Weather") {
                         showWeather = true
-                    } label: {
-                        VStack(spacing: 4) {
-                            Image(systemName: "cloud.sun.fill")
-                                .font(.title2)
-                            Text("Weather")
-                                .font(.caption2)
-                        }
-                        .foregroundStyle(Color.appTeal)
                     }
                 }
                 .padding(.horizontal, 24)

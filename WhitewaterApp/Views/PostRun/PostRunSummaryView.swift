@@ -66,7 +66,7 @@ struct PostRunSummaryView: View {
                         Label("Notes", systemImage: "text.justify")
                             .font(.headline)
                         TextEditor(text: $viewModel.notes)
-                            .frame(minHeight: 80)
+                            .frame(minHeight: LayoutConstants.textEditorMinHeight)
                             .padding(8)
                             .background(.quaternary, in: RoundedRectangle(cornerRadius: 10))
                     }
@@ -200,22 +200,22 @@ private struct SummaryCard: View {
             Divider()
 
             HStack(spacing: 0) {
-                MetricCell(value: String(format: "%.2f", distanceMiles), unit: "miles", valueFont: .title3.bold())
-                Divider().frame(height: 40)
+                MetricCell(value: distanceMiles.formattedDistance, unit: "miles", valueFont: .title3.bold())
+                Divider().frame(height: LayoutConstants.metricDividerHeight)
                 MetricCell(value: formattedDuration, unit: "time", valueFont: .title3.bold())
-                Divider().frame(height: 40)
+                Divider().frame(height: LayoutConstants.metricDividerHeight)
                 MetricCell(value: "\(caloriesBurned)", unit: "cal", valueFont: .title3.bold())
             }
 
             if let start = startGauge {
                 Divider()
                 HStack {
-                    Text("Start gauge: \(String(format: "%.2f", start)) ft")
+                    Text("Start gauge: \(start.formattedGauge) ft")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Spacer()
                     if let end = endGauge {
-                        Text("End: \(String(format: "%.2f", end)) ft")
+                        Text("End: \(end.formattedGauge) ft")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -307,7 +307,7 @@ private struct FlowLayout<Content: View>: View {
     let content: (String) -> Content
 
     var body: some View {
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: 80))], alignment: .leading, spacing: 6) {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: LayoutConstants.tagGridMinimum))], alignment: .leading, spacing: 6) {
             ForEach(tags, id: \.self, content: content)
         }
     }

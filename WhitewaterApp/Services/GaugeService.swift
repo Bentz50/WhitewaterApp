@@ -87,6 +87,32 @@ final class GaugeService: ObservableObject {
 
     // MARK: - USGS JSON parsing
 
+    /// USGS parameter codes for streamflow and gage height.
+    private enum USGSParameter: String {
+        case streamflow = "00060"
+        case gageHeight = "00065"
+
+        var unit: String {
+            switch self {
+            case .streamflow: return "cfs"
+            case .gageHeight: return "ft"
+            }
+        }
+    }
+
+    /// ISO 8601 formatters (with and without fractional seconds) reused across parsing calls.
+    private static let isoFull: ISO8601DateFormatter = {
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return f
+    }()
+
+    private static let isoBasic: ISO8601DateFormatter = {
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime]
+        return f
+    }()
+
     private func parseUSGSResponse(_ data: Data, siteId: String) throws -> GaugeData {
 
         // Internal mirror types matching USGS camelCase JSON (no key conversion applied).
@@ -108,30 +134,23 @@ final class GaugeService: ObservableObject {
         var readings: [GaugeReading] = []
         var siteName = siteId
 
-        // Two ISO8601 formatters: with and without fractional seconds
-        let isoFull  = ISO8601DateFormatter()
-        isoFull.formatOptions  = [.withInternetDateTime, .withFractionalSeconds]
-        let isoBasic = ISO8601DateFormatter()
-        isoBasic.formatOptions = [.withInternetDateTime]
-
         for series in root.value.timeSeries {
             siteName = series.sourceInfo.siteName
-            guard let paramCode = series.variable.variableCode.first?.value else { continue }
-            let unit = paramCode == "00060" ? "cfs" : "ft"
+            guard let paramCodeStr = series.variable.variableCode.first?.value,
+                  let param = USGSParameter(rawValue: paramCodeStr) else { continue }
 
             for set in series.values {
                 for entry in set.value {
                     guard
                         let value = Double(entry.value),
-                        let date  = isoFull.date(from: entry.dateTime)
-                                    ?? isoBasic.date(from: entry.dateTime)
+                        let date  = Self.isoFull.date(from: entry.dateTime)
+                                    ?? Self.isoBasic.date(from: entry.dateTime)
                     else { continue }
 
-                    readings.append(GaugeReading(timestamp: date, value: value, unit: unit))
-                    switch paramCode {
-                    case "00060": streamflowCfs = value
-                    case "00065": gageHeightFt  = value
-                    default: break
+                    readings.append(GaugeReading(timestamp: date, value: value, unit: param.unit))
+                    switch param {
+                    case .streamflow: streamflowCfs = value
+                    case .gageHeight: gageHeightFt  = value
                     }
                 }
             }
