@@ -40,7 +40,7 @@ class Database {
         try {
             $this->conn = new PDO($dsn, $this->username, $this->password, $options);
         } catch (PDOException $e) {
-            error_log('Database connection failed: ' . $e->getMessage());
+            Logger::error('Database connection failed', ['error' => $e->getMessage()]);
             Response::error('Database connection failed', 500);
             exit;
         }

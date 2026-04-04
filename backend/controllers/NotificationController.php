@@ -134,12 +134,12 @@ class NotificationController extends BaseController {
         curl_close($ch);
 
         if ($curlError) {
-            error_log("APNs cURL error for token {$deviceToken}: {$curlError}");
+            Logger::error('APNs cURL error', ['token' => $deviceToken, 'error' => $curlError]);
             return false;
         }
 
         if ($httpCode !== 200) {
-            error_log("APNs HTTP {$httpCode} for token {$deviceToken}: {$response}");
+            Logger::error('APNs HTTP error', ['token' => $deviceToken, 'http_code' => $httpCode, 'response' => $response]);
             return false;
         }
 

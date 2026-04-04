@@ -11,6 +11,7 @@ require_once __DIR__ . '/utils/GaugeProxy.php';
 require_once __DIR__ . '/utils/BaseController.php';
 require_once __DIR__ . '/utils/BaseModel.php';
 require_once __DIR__ . '/utils/GeoQuery.php';
+require_once __DIR__ . '/utils/Logger.php';
 require_once __DIR__ . '/middleware/cors.php';
 require_once __DIR__ . '/middleware/auth.php';
 require_once __DIR__ . '/middleware/rate_limit.php';
