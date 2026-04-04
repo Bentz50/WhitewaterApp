@@ -3,15 +3,9 @@
 
 require_once __DIR__ . '/../models/User.php';
 
-class AuthController {
-    private PDO $db;
-
+class AuthController extends BaseController {
     /** Cached Apple public keys (JWK set) */
     private ?array $appleKeys = null;
-
-    public function __construct() {
-        $this->db = Database::getInstance()->getConn();
-    }
 
     // ── Sign in with Apple ───────────────────────────────────────────
 

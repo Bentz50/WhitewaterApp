@@ -6,12 +6,7 @@ require_once __DIR__ . '/../models/Hazard.php';
 require_once __DIR__ . '/../models/Media.php';
 require_once __DIR__ . '/../models/Skill.php';
 
-class RunLogController {
-    private PDO $db;
-
-    public function __construct() {
-        $this->db = Database::getInstance()->getConn();
-    }
+class RunLogController extends BaseController {
 
     public function create(array $body, array $auth): void {
         $missing = Validator::required($body, ['run_date']);
@@ -25,10 +20,7 @@ class RunLogController {
     }
 
     public function show(int $id, array $auth): void {
-        $run = RunLog::findById($this->db, $id);
-        if (!$run) {
-            Response::error('Run not found', 404);
-        }
+        $run = $this->findOrFail(RunLog::findById($this->db, $id), 'Run');
         if (!$run['is_public'] && (int) $run['user_id'] !== (int) $auth['user_id']) {
             Response::error('Access denied', 403);
         }
@@ -59,10 +51,8 @@ class RunLogController {
     }
 
     public function addSkills(int $runId, array $body, array $auth): void {
-        $run = RunLog::findById($this->db, $runId);
-        if (!$run || (int) $run['user_id'] !== (int) $auth['user_id']) {
-            Response::error('Run not found or access denied', 404);
-        }
+        $run = $this->findOrFail(RunLog::findById($this->db, $runId), 'Run');
+        $this->requireOwnership($run, $auth);
 
         $skillIds = $body['skill_ids'] ?? [];
         if (empty($skillIds) || !is_array($skillIds)) {
@@ -79,10 +69,8 @@ class RunLogController {
     }
 
     public function addMedia(int $runId, array $auth): void {
-        $run = RunLog::findById($this->db, $runId);
-        if (!$run || (int) $run['user_id'] !== (int) $auth['user_id']) {
-            Response::error('Run not found or access denied', 404);
-        }
+        $run = $this->findOrFail(RunLog::findById($this->db, $runId), 'Run');
+        $this->requireOwnership($run, $auth);
 
         if (empty($_FILES['file'])) {
             Response::error('No file provided', 400);
@@ -104,10 +92,8 @@ class RunLogController {
     }
 
     public function hazardReport(int $runId, array $body, array $auth): void {
-        $run = RunLog::findById($this->db, $runId);
-        if (!$run || (int) $run['user_id'] !== (int) $auth['user_id']) {
-            Response::error('Run not found or access denied', 404);
-        }
+        $run = $this->findOrFail(RunLog::findById($this->db, $runId), 'Run');
+        $this->requireOwnership($run, $auth);
 
         $missing = Validator::required($body, ['type']);
         if ($missing) {
@@ -122,10 +108,8 @@ class RunLogController {
     }
 
     public function injuryReport(int $runId, array $body, array $auth): void {
-        $run = RunLog::findById($this->db, $runId);
-        if (!$run || (int) $run['user_id'] !== (int) $auth['user_id']) {
-            Response::error('Run not found or access denied', 404);
-        }
+        $run = $this->findOrFail(RunLog::findById($this->db, $runId), 'Run');
+        $this->requireOwnership($run, $auth);
 
         $stmt = $this->db->prepare(
             'INSERT INTO injury_reports

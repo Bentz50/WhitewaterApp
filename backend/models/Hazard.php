@@ -3,19 +3,17 @@
 
 class Hazard {
     public static function findNearby(PDO $db, float $lat, float $lng, float $radiusMiles): array {
-        $sql = "SELECT *,
-                    (3958.8 * ACOS(
-                        COS(RADIANS(:lat1)) * COS(RADIANS(lat)) *
-                        COS(RADIANS(lng) - RADIANS(:lng1)) +
-                        SIN(RADIANS(:lat2)) * SIN(RADIANS(lat))
-                    )) AS distance_miles
+        $params    = GeoQuery::haversineParams($lat, $lng, $radiusMiles);
+        $haversine = GeoQuery::haversineExpr('lat', 'lng');
+
+        $sql = "SELECT *, $haversine AS distance_miles
                 FROM hazards
                 WHERE status != 'cleared'
-                HAVING distance_miles <= :r
+                HAVING distance_miles <= :geo_r
                 ORDER BY distance_miles
                 LIMIT 100";
         $stmt = $db->prepare($sql);
-        $stmt->execute([':lat1' => $lat, ':lng1' => $lng, ':lat2' => $lat, ':r' => $radiusMiles]);
+        $stmt->execute($params);
         return $stmt->fetchAll();
     }
 

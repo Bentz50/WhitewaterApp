@@ -2,6 +2,9 @@
 // Copyright © 2026 BentzTech LLC. All rights reserved.
 
 class GaugeProxy {
+    /** USGS uses this sentinel value to indicate missing/unavailable data. */
+    private const USGS_MISSING_DATA = '-999999';
+
     public static function fetchUSGS(string $siteId): array {
         $url  = USGS_BASE_URL . '?format=json&sites=' . urlencode($siteId) . '&parameterCd=00060,00065';
         $json = self::httpGet($url);
@@ -28,8 +31,8 @@ class GaugeProxy {
                 $result['site_name'] = $siteName;
             }
 
-            // USGS returns '-999999' as its standard sentinel for missing/unavailable data
-            if (!$latest || $latest['value'] === '-999999') {
+            // USGS uses a sentinel value for missing/unavailable data
+            if (!$latest || $latest['value'] === self::USGS_MISSING_DATA) {
                 continue;
             }
 
@@ -105,6 +108,7 @@ class GaugeProxy {
 
             return json_decode($row['data'], true);
         } catch (Exception $e) {
+            Logger::warning('Gauge cache read failed', ['site_id' => $siteId, 'source' => $source, 'error' => $e->getMessage()]);
             return null;
         }
     }
@@ -122,6 +126,7 @@ class GaugeProxy {
                 ':data'    => json_encode($data),
             ]);
         } catch (Exception $e) {
+            Logger::warning('Gauge cache write failed', ['site_id' => $siteId, 'source' => $source, 'error' => $e->getMessage()]);
             // Cache write failure is non-fatal
         }
     }

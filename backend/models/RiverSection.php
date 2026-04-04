@@ -2,12 +2,8 @@
 // Copyright © 2026 BentzTech LLC. All rights reserved.
 
 class RiverSection {
-    public static function findById(PDO $db, int $id): ?array {
-        $stmt = $db->prepare('SELECT * FROM river_sections WHERE id = :id LIMIT 1');
-        $stmt->execute([':id' => $id]);
-        $row = $stmt->fetch();
-        return $row ?: null;
-    }
+    use BaseModel;
+    const TABLE = 'river_sections';
 
     public static function findByRiverId(PDO $db, int $riverId): array {
         $stmt = $db->prepare(
@@ -21,12 +17,7 @@ class RiverSection {
      * Haversine-based proximity search for sections.
      */
     public static function search(PDO $db, float $lat, float $lng, float $radiusMiles, array $filters = []): array {
-        $params = [
-            ':lat1' => $lat,
-            ':lng1' => $lng,
-            ':lat2' => $lat,
-            ':r'    => $radiusMiles,
-        ];
+        $params = GeoQuery::haversineParams($lat, $lng, $radiusMiles);
 
         $where = ['1=1'];
 
@@ -41,17 +32,14 @@ class RiverSection {
         }
 
         $whereClause = implode(' AND ', $where);
+        $haversine   = GeoQuery::haversineExpr('rs.put_in_lat', 'rs.put_in_lng');
 
         $sql = "SELECT rs.*, r.name AS river_name, r.state, r.region,
-                    (3958.8 * ACOS(
-                        COS(RADIANS(:lat1)) * COS(RADIANS(rs.put_in_lat)) *
-                        COS(RADIANS(rs.put_in_lng) - RADIANS(:lng1)) +
-                        SIN(RADIANS(:lat2)) * SIN(RADIANS(rs.put_in_lat))
-                    )) AS distance_miles
+                    $haversine AS distance_miles
                 FROM river_sections rs
                 JOIN rivers r ON r.id = rs.river_id
                 WHERE $whereClause
-                HAVING distance_miles <= :r
+                HAVING distance_miles <= :geo_r
                 ORDER BY distance_miles
                 LIMIT 50";
 

@@ -2,6 +2,9 @@
 // Copyright © 2026 BentzTech LLC. All rights reserved.
 
 class RunLog {
+    use BaseModel;
+    const TABLE = 'run_logs';
+
     public static function create(PDO $db, array $data): int {
         $sql = 'INSERT INTO run_logs
                     (user_id, river_id, section_id, vessel_id, start_time, end_time,
@@ -66,11 +69,12 @@ class RunLog {
             'SELECT rl.*, u.username, u.display_name, u.avatar_url
              FROM run_logs rl
              JOIN users u ON u.id = rl.user_id
-             WHERE rl.river_id = :rid AND rl.privacy = 'public'
+             WHERE rl.river_id = :rid AND rl.privacy = :privacy
              ORDER BY rl.start_time DESC
              LIMIT :lim'
         );
         $stmt->bindValue(':rid', $riverId, PDO::PARAM_INT);
+        $stmt->bindValue(':privacy', 'public', PDO::PARAM_STR);
         $stmt->bindValue(':lim', $limit, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
@@ -79,23 +83,6 @@ class RunLog {
     public static function update(PDO $db, int $id, int $userId, array $data): bool {
         $allowed = ['notes', 'privacy', 'distance_miles', 'duration_seconds', 'calories_burned',
                     'start_gauge_level', 'end_gauge_level', 'vessel_id', 'end_time'];
-        $sets   = [];
-        $params = [':id' => $id, ':user_id' => $userId];
-
-        foreach ($allowed as $col) {
-            if (array_key_exists($col, $data)) {
-                $sets[]         = "$col = :$col";
-                $params[":$col"] = $data[$col];
-            }
-        }
-
-        if (empty($sets)) {
-            return false;
-        }
-
-        $sql  = 'UPDATE run_logs SET ' . implode(', ', $sets) . ' WHERE id = :id AND user_id = :user_id';
-        $stmt = $db->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->rowCount() > 0;
+        return self::dynamicUpdate($db, $id, $data, $allowed, ['user_id' => $userId]);
     }
 }

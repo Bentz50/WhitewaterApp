@@ -37,79 +37,27 @@ final class SocialViewModel: ObservableObject {
     func loadFeed() async {
         isLoading = true
         defer { isLoading = false }
-        do {
-            struct RawPost: Codable {
-                let id: Int
-                let userId: Int
-                let username: String
-                let avatarUrl: String?
-                let content: String
-                let type: String
-                let createdAt: Date
-                let likeCount: Int
-                let isLiked: Bool
-                let commentCount: Int
-            }
-            let raw = try await api.get("/feed", responseType: [RawPost].self)
-            feed = raw.map {
-                SocialPost(
-                    id: $0.id,
-                    userId: $0.userId,
-                    username: $0.username,
-                    avatarURL: $0.avatarUrl,
-                    content: $0.content,
-                    type: $0.type,
-                    createdAt: $0.createdAt,
-                    likeCount: $0.likeCount,
-                    isLiked: $0.isLiked,
-                    commentCount: $0.commentCount
-                )
-            }
-        } catch {
-            feed = []
-        }
+        feed = await loadFeedFromEndpoint("/feed")
     }
 
     func loadCrewFeed() async {
         isLoading = true
         defer { isLoading = false }
+        crewFeed = await loadFeedFromEndpoint("/feed/crew")
+    }
+
+    private func loadFeedFromEndpoint(_ endpoint: String) async -> [SocialPost] {
         do {
-            struct RawPost: Codable {
-                let id: Int
-                let userId: Int
-                let username: String
-                let avatarUrl: String?
-                let content: String
-                let type: String
-                let createdAt: Date
-                let likeCount: Int
-                let isLiked: Bool
-                let commentCount: Int
-            }
-            let raw = try await api.get("/feed/crew", responseType: [RawPost].self)
-            crewFeed = raw.map {
-                SocialPost(
-                    id: $0.id,
-                    userId: $0.userId,
-                    username: $0.username,
-                    avatarURL: $0.avatarUrl,
-                    content: $0.content,
-                    type: $0.type,
-                    createdAt: $0.createdAt,
-                    likeCount: $0.likeCount,
-                    isLiked: $0.isLiked,
-                    commentCount: $0.commentCount
-                )
-            }
+            let raw = try await api.get(endpoint, responseType: [RawPost].self)
+            return raw.map { $0.toSocialPost() }
         } catch {
-            crewFeed = []
+            return []
         }
     }
 
     // MARK: - Likes
 
     func likePost(id: Int) async throws {
-        struct Empty: Codable {}
 
         if let idx = feed.firstIndex(where: { $0.id == id }) {
             let post = feed[idx]

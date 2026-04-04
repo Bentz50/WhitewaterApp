@@ -1,12 +1,7 @@
 <?php
 // Copyright © 2026 BentzTech LLC. All rights reserved.
 
-class NotificationController {
-    private PDO $db;
-
-    public function __construct() {
-        $this->db = Database::getInstance()->getConn();
-    }
+class NotificationController extends BaseController {
 
     /**
      * POST /notifications/dam-release (internal/cron trigger)
@@ -139,12 +134,12 @@ class NotificationController {
         curl_close($ch);
 
         if ($curlError) {
-            error_log("APNs cURL error for token {$deviceToken}: {$curlError}");
+            Logger::error('APNs cURL error', ['token' => $deviceToken, 'error' => $curlError]);
             return false;
         }
 
         if ($httpCode !== 200) {
-            error_log("APNs HTTP {$httpCode} for token {$deviceToken}: {$response}");
+            Logger::error('APNs HTTP error', ['token' => $deviceToken, 'http_code' => $httpCode, 'response' => $response]);
             return false;
         }
 

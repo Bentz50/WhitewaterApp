@@ -3,12 +3,7 @@
 
 require_once __DIR__ . '/../models/Vessel.php';
 
-class VesselController {
-    private PDO $db;
-
-    public function __construct() {
-        $this->db = Database::getInstance()->getConn();
-    }
+class VesselController extends BaseController {
 
     public function index(array $auth): void {
         $vessels = Vessel::findByUserId($this->db, (int) $auth['user_id']);

@@ -2,12 +2,8 @@
 // Copyright © 2026 BentzTech LLC. All rights reserved.
 
 class User {
-    public static function findById(PDO $db, int $id): ?array {
-        $stmt = $db->prepare('SELECT * FROM users WHERE id = :id LIMIT 1');
-        $stmt->execute([':id' => $id]);
-        $row = $stmt->fetch();
-        return $row ?: null;
-    }
+    use BaseModel;
+    const TABLE = 'users';
 
     public static function findByEmail(PDO $db, string $email): ?array {
         $stmt = $db->prepare('SELECT * FROM users WHERE email = :email LIMIT 1');
@@ -54,25 +50,9 @@ class User {
 
     public static function update(PDO $db, int $id, array $data): bool {
         $allowed = ['display_name', 'preferred_difficulty', 'water_experiences', 'interests', 'avatar_url', 'bio'];
-        $sets    = [];
-        $params  = [':id' => $id];
-
-        foreach ($allowed as $col) {
-            if (array_key_exists($col, $data)) {
-                $sets[]         = "$col = :$col";
-                $params[":$col"] = is_array($data[$col]) ? json_encode($data[$col]) : $data[$col];
-            }
-        }
-
-        if (empty($sets)) {
-            return false;
-        }
-
-        $sets[] = 'updated_at = NOW()';
-        $sql    = 'UPDATE users SET ' . implode(', ', $sets) . ' WHERE id = :id';
-        $stmt   = $db->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->rowCount() > 0;
+        $data['updated_at'] = date('Y-m-d H:i:s');
+        $allowed[] = 'updated_at';
+        return self::dynamicUpdate($db, $id, $data, $allowed);
     }
 
     public static function search(PDO $db, string $q, int $limit = 20): array {

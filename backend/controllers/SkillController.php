@@ -3,12 +3,7 @@
 
 require_once __DIR__ . '/../models/Skill.php';
 
-class SkillController {
-    private PDO $db;
-
-    public function __construct() {
-        $this->db = Database::getInstance()->getConn();
-    }
+class SkillController extends BaseController {
 
     public function index(): void {
         $skills = Skill::findAll($this->db);

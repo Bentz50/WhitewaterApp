@@ -3,12 +3,7 @@
 
 require_once __DIR__ . '/../models/ClubMembership.php';
 
-class ClubController {
-    private PDO $db;
-
-    public function __construct() {
-        $this->db = Database::getInstance()->getConn();
-    }
+class ClubController extends BaseController {
 
     public function index(array $auth): void {
         $clubs = ClubMembership::findByUserId($this->db, (int) $auth['user_id']);

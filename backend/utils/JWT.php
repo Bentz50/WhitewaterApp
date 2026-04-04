@@ -17,34 +17,20 @@ class JWT {
         return "$header.$body.$signature";
     }
 
+    /**
+     * Decode a JWT token, returning null on any failure.
+     */
     public static function decode(string $token): ?array {
-        $parts = explode('.', $token);
-        if (count($parts) !== 3) {
+        try {
+            return self::verify($token);
+        } catch (RuntimeException) {
             return null;
         }
-
-        [$header, $body, $signature] = $parts;
-
-        $expectedSig = self::base64url_encode(
-            hash_hmac('sha256', "$header.$body", JWT_SECRET, true)
-        );
-
-        if (!hash_equals($expectedSig, $signature)) {
-            return null; // Invalid signature
-        }
-
-        $payload = json_decode(self::base64url_decode($body), true);
-        if (!is_array($payload)) {
-            return null;
-        }
-
-        if (isset($payload['exp']) && $payload['exp'] < time()) {
-            return null; // Token expired
-        }
-
-        return $payload;
     }
 
+    /**
+     * Verify and decode a JWT token, throwing on any failure.
+     */
     public static function verify(string $token): array {
         $parts = explode('.', $token);
         if (count($parts) !== 3) {

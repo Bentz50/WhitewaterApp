@@ -8,6 +8,10 @@ require_once __DIR__ . '/utils/JWT.php';
 require_once __DIR__ . '/utils/Validator.php';
 require_once __DIR__ . '/utils/FileUpload.php';
 require_once __DIR__ . '/utils/GaugeProxy.php';
+require_once __DIR__ . '/utils/BaseController.php';
+require_once __DIR__ . '/utils/BaseModel.php';
+require_once __DIR__ . '/utils/GeoQuery.php';
+require_once __DIR__ . '/utils/Logger.php';
 require_once __DIR__ . '/middleware/cors.php';
 require_once __DIR__ . '/middleware/auth.php';
 require_once __DIR__ . '/middleware/rate_limit.php';
@@ -15,8 +19,15 @@ require_once __DIR__ . '/middleware/rate_limit.php';
 // Apply CORS headers (and exit on OPTIONS preflight)
 applyCors();
 
-// Rate-limit by IP
-checkRateLimit($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0');
+// Determine endpoint category for rate limiting
+$rateLimitEndpoint = 'default';
+$rateLimitUri = '/' . trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+if (str_contains($rateLimitUri, '/auth/')) {
+    $rateLimitEndpoint = 'auth';
+}
+
+// Rate-limit by IP (user-aware limits are applied after auth, if needed)
+checkRateLimit($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0', $rateLimitEndpoint);
 
 // Parse request
 $method = $_SERVER['REQUEST_METHOD'];

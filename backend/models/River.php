@@ -4,12 +4,8 @@
 require_once __DIR__ . '/RiverSection.php';
 
 class River {
-    public static function findById(PDO $db, int $id): ?array {
-        $stmt = $db->prepare('SELECT * FROM rivers WHERE id = :id LIMIT 1');
-        $stmt->execute([':id' => $id]);
-        $row = $stmt->fetch();
-        return $row ?: null;
-    }
+    use BaseModel;
+    const TABLE = 'rivers';
 
     /**
      * Find a river by ID with its sections included.
@@ -29,12 +25,7 @@ class River {
      * $filters – optional keys: aw_rating, runnable (bool)
      */
     public static function search(PDO $db, float $lat, float $lng, float $radiusMiles, array $filters = []): array {
-        $params = [
-            ':lat1' => $lat,
-            ':lng1' => $lng,
-            ':lat2' => $lat,
-            ':r'    => $radiusMiles,
-        ];
+        $params = GeoQuery::haversineParams($lat, $lng, $radiusMiles);
 
         $where = ['1=1'];
 
@@ -49,16 +40,12 @@ class River {
         }
 
         $whereClause = implode(' AND ', $where);
+        $haversine   = GeoQuery::haversineExpr('put_in_lat', 'put_in_lng');
 
-        $sql = "SELECT *,
-                    (3958.8 * ACOS(
-                        COS(RADIANS(:lat1)) * COS(RADIANS(put_in_lat)) *
-                        COS(RADIANS(put_in_lng) - RADIANS(:lng1)) +
-                        SIN(RADIANS(:lat2)) * SIN(RADIANS(put_in_lat))
-                    )) AS distance_miles
+        $sql = "SELECT *, $haversine AS distance_miles
                 FROM rivers
                 WHERE $whereClause
-                HAVING distance_miles <= :r
+                HAVING distance_miles <= :geo_r
                 ORDER BY distance_miles
                 LIMIT 50";
 

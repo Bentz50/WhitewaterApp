@@ -25,20 +25,19 @@ class Event {
     }
 
     public static function findNearby(PDO $db, float $lat, float $lng, float $radiusMiles): array {
+        $params    = GeoQuery::haversineParams($lat, $lng, $radiusMiles);
+        $haversine = GeoQuery::haversineExpr('e.lat', 'e.lng');
+
         $sql = "SELECT e.*, u.username, u.display_name,
-                    (3958.8 * ACOS(
-                        COS(RADIANS(:lat1)) * COS(RADIANS(e.lat)) *
-                        COS(RADIANS(e.lng) - RADIANS(:lng1)) +
-                        SIN(RADIANS(:lat2)) * SIN(RADIANS(e.lat))
-                    )) AS distance_miles
+                    $haversine AS distance_miles
                 FROM events e
                 JOIN users u ON u.id = e.organizer_id
                 WHERE e.event_date >= CURDATE()
-                HAVING distance_miles <= :r
+                HAVING distance_miles <= :geo_r
                 ORDER BY e.event_date ASC
                 LIMIT 50";
         $stmt = $db->prepare($sql);
-        $stmt->execute([':lat1' => $lat, ':lng1' => $lng, ':lat2' => $lat, ':r' => $radiusMiles]);
+        $stmt->execute($params);
         return $stmt->fetchAll();
     }
 

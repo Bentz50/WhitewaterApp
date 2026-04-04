@@ -3,18 +3,10 @@
 
 require_once __DIR__ . '/../models/User.php';
 
-class UserController {
-    private PDO $db;
-
-    public function __construct() {
-        $this->db = Database::getInstance()->getConn();
-    }
+class UserController extends BaseController {
 
     public function getMe(array $auth): void {
-        $user = User::findById($this->db, (int) $auth['user_id']);
-        if (!$user) {
-            Response::error('User not found', 404);
-        }
+        $user = $this->findOrFail(User::findById($this->db, (int) $auth['user_id']), 'User');
         Response::success(User::toPublicArray($user));
     }
 
@@ -54,10 +46,7 @@ class UserController {
     }
 
     public function getUser(int $userId): void {
-        $user = User::findById($this->db, $userId);
-        if (!$user) {
-            Response::error('User not found', 404);
-        }
+        $user = $this->findOrFail(User::findById($this->db, $userId), 'User');
         // Return only public-safe fields
         Response::success([
             'id'           => $user['id'],
