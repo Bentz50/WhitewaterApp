@@ -82,17 +82,7 @@ Expected: a JSON array of river objects.
 
 ## Part B: iOS App Configuration
 
-### B1. Open the Project in Xcode
-```bash
-open WhitewaterApp.xcodeproj
-```
-
-### B2. Set Bundle ID and Team
-1. Select the `WhitewaterApp` target → **Signing & Capabilities**.
-2. Set **Team** to your Apple Developer account.
-3. Confirm **Bundle Identifier**: `com.bentztech.whitewaterapp`.
-
-### B3. Set the API Base URL
+### B1. Set the API Base URL
 Edit `WhitewaterApp/Config/APIConfig.swift`:
 ```swift
 enum APIConfig {
@@ -100,13 +90,13 @@ enum APIConfig {
 }
 ```
 
-### B4. Enable Required Capabilities
-In **Signing & Capabilities**, add:
+### B2. Enable Required Capabilities
+In the Xcode project under **Signing & Capabilities**, ensure these are added:
 - **Push Notifications** — for APNs alerts
 - **Background Modes** → check **Location updates** (for GPS run tracking)
 - **Maps** (if using MapKit entitlements)
 
-### B5. Configure APNs (Push Notifications)
+### B3. Configure APNs (Push Notifications)
 1. In [developer.apple.com](https://developer.apple.com) → **Certificates, Identifiers & Profiles** → **Keys**, create an APNs key (`.p8`).
 2. Download and upload the `.p8` file to the server at a non-public path (e.g., `~/certs/apns.p8`).
 3. Note the **Key ID** and your **Team ID**.
@@ -118,10 +108,68 @@ In **Signing & Capabilities**, add:
    define('APNS_BUNDLE_ID','com.bentztech.whitewaterapp');
    ```
 
-### B6. Build and Test
-1. Select an **iOS 17+ simulator** or a connected device.
-2. Press **⌘R** to build and run.
-3. Confirm the app launches, can register/login, and fetches river data.
+### B4. Codemagic CI/CD Setup
+Codemagic handles building, signing, and distributing the iOS app.
+
+1. Sign up at [codemagic.io](https://codemagic.io) and connect your GitHub repository.
+2. In the Codemagic dashboard, select the **WhitewaterApp** repository and choose **iOS App** as the project type.
+3. **Code Signing:**
+   - Go to **Settings → Code signing → iOS**.
+   - Upload your **Apple Distribution certificate** (`.p12`) and its password.
+   - Upload the **provisioning profile** (App Store distribution profile) for `com.bentztech.whitewaterapp`.
+   - Alternatively, enable **Automatic code signing** by adding your App Store Connect API key (`.p8`), Key ID, and Issuer ID.
+4. **App Store Connect Integration:**
+   - In **Settings → Integrations → App Store Connect**, add your API key so Codemagic can upload builds directly to TestFlight and App Store Connect.
+5. **Environment Variables (optional):**
+   - Set `API_BASE_URL` if you want to inject the base URL at build time.
+6. **Build Configuration:**
+   - Set the Xcode version (latest stable recommended).
+   - Set the build scheme to `WhitewaterApp`.
+   - Set the build configuration to `Release`.
+   - Ensure **Bundle Identifier** is `com.bentztech.whitewaterapp` and **Team** is set to your Apple Developer account.
+
+### B5. Codemagic Workflow Configuration
+Add a `codemagic.yaml` file to the repository root:
+```yaml
+workflows:
+  ios-release:
+    name: iOS Release
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.bentztech.whitewaterapp
+      vars:
+        XCODE_SCHEME: WhitewaterApp
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Set up code signing
+        script: xcode-project use-profiles
+      - name: Build ipa
+        script: |
+          xcode-project build-ipa \
+            --project "WhitewaterApp.xcodeproj" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        cancel_previous_submissions: true
+```
+
+### B6. Local Development (Optional)
+For local testing and development you can still build directly in Xcode:
+1. Open `WhitewaterApp.xcodeproj`.
+2. Select the `WhitewaterApp` target → **Signing & Capabilities**.
+3. Set **Team** to your Apple Developer account.
+4. Confirm **Bundle Identifier**: `com.bentztech.whitewaterapp`.
+5. Select an **iOS 17+ simulator** or a connected device.
+6. Press **⌘R** to build and run.
+7. Confirm the app launches, can register/login, and fetches river data.
 
 ---
 
@@ -157,8 +205,8 @@ Prepare screenshots for all required device sizes:
 Recommended screens: River Explorer map, Run Log tracking, Social Feed, Hazard Report, Achievement unlock.
 
 ### C4. TestFlight (Beta Testing)
-1. In Xcode: **Product → Archive**.
-2. In the Organizer, click **Distribute App → App Store Connect → Upload**.
+1. Push to the branch configured in your Codemagic workflow (or trigger a build manually from the Codemagic dashboard).
+2. Codemagic will build, sign, and upload the `.ipa` to App Store Connect automatically.
 3. In App Store Connect → **TestFlight**, add internal testers (up to 100).
 4. For external testing, submit for Beta App Review.
 
@@ -201,9 +249,10 @@ To rotate the JWT secret:
 
 ### D6. App Updates
 1. Increment `CFBundleShortVersionString` (marketing version) and `CFBundleVersion` (build number) in `Info.plist`.
-2. Archive and upload via Xcode Organizer.
-3. Create a new version in App Store Connect with release notes.
-4. Run through TestFlight before submitting for review.
+2. Push changes to trigger a Codemagic build, or start a build manually from the Codemagic dashboard.
+3. Codemagic will build, sign, and upload the new build to TestFlight automatically.
+4. Create a new version in App Store Connect with release notes.
+5. Run through TestFlight before submitting for review.
 
 ### D7. Analytics & Crash Reporting
 Consider integrating (post-launch):
