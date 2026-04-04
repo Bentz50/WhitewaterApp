@@ -1,12 +1,7 @@
 <?php
 // Copyright © 2026 BentzTech LLC. All rights reserved.
 
-class NotificationController {
-    private PDO $db;
-
-    public function __construct() {
-        $this->db = Database::getInstance()->getConn();
-    }
+class NotificationController extends BaseController {
 
     /**
      * POST /notifications/dam-release (internal/cron trigger)

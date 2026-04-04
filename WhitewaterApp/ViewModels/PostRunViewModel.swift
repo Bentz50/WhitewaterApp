@@ -75,7 +75,6 @@ final class PostRunViewModel: ObservableObject {
 
     func verifyHazard(id: Int, status: String, notes: String) async throws {
         struct Body: Encodable { let status: String; let notes: String }
-        struct Empty: Codable {}
         _ = try await api.put(
             "/hazards/\(id)",
             body: Body(status: status, notes: notes),

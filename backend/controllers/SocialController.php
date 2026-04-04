@@ -3,12 +3,7 @@
 
 require_once __DIR__ . '/../models/Comment.php';
 
-class SocialController {
-    private PDO $db;
-
-    public function __construct() {
-        $this->db = Database::getInstance()->getConn();
-    }
+class SocialController extends BaseController {
 
     public function getFeed(?array $auth, array $params): void {
         $page    = max(1, (int) ($params['page']     ?? 1));

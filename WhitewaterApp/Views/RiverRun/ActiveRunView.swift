@@ -166,24 +166,6 @@ struct ActiveRunView: View {
     }
 
     private var formattedElapsed: String {
-        let h = viewModel.elapsedSeconds / 3600
-        let m = (viewModel.elapsedSeconds % 3600) / 60
-        let s = viewModel.elapsedSeconds % 60
-        if h > 0 { return String(format: "%d:%02d:%02d", h, m, s) }
-        return String(format: "%02d:%02d", m, s)
-    }
-}
-
-private struct MetricCell: View {
-    let value: String
-    let unit: String
-
-    var body: some View {
-        VStack(spacing: 2) {
-            Text(value).font(.title2.bold())
-            Text(unit).font(.caption2).foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 10)
+        viewModel.elapsedSeconds.formattedDuration
     }
 }

@@ -178,10 +178,7 @@ private struct SummaryCard: View {
     let endGauge: Double?
 
     private var formattedDuration: String {
-        let h = durationSeconds / 3600
-        let m = (durationSeconds % 3600) / 60
-        let s = durationSeconds % 60
-        return h > 0 ? String(format: "%d:%02d:%02d", h, m, s) : String(format: "%02d:%02d", m, s)
+        durationSeconds.formattedDuration
     }
 
     var body: some View {
@@ -203,11 +200,11 @@ private struct SummaryCard: View {
             Divider()
 
             HStack(spacing: 0) {
-                SummaryMetric(value: String(format: "%.2f", distanceMiles), unit: "miles")
+                MetricCell(value: String(format: "%.2f", distanceMiles), unit: "miles")
                 Divider().frame(height: 40)
-                SummaryMetric(value: formattedDuration, unit: "time")
+                MetricCell(value: formattedDuration, unit: "time")
                 Divider().frame(height: 40)
-                SummaryMetric(value: "\(caloriesBurned)", unit: "cal")
+                MetricCell(value: "\(caloriesBurned)", unit: "cal")
             }
 
             if let start = startGauge {
@@ -228,18 +225,6 @@ private struct SummaryCard: View {
         .padding()
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
         .padding(.horizontal)
-    }
-}
-
-private struct SummaryMetric: View {
-    let value: String
-    let unit: String
-    var body: some View {
-        VStack(spacing: 2) {
-            Text(value).font(.title3.bold())
-            Text(unit).font(.caption2).foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity)
     }
 }
 

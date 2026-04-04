@@ -3,12 +3,7 @@
 
 require_once __DIR__ . '/../models/Achievement.php';
 
-class AchievementController {
-    private PDO $db;
-
-    public function __construct() {
-        $this->db = Database::getInstance()->getConn();
-    }
+class AchievementController extends BaseController {
 
     public function getMyAchievements(array $auth): void {
         $achievements = Achievement::findUnlocked($this->db, (int) $auth['user_id']);

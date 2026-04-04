@@ -7,12 +7,7 @@ require_once __DIR__ . '/../models/Hazard.php';
 require_once __DIR__ . '/../models/RunLog.php';
 require_once __DIR__ . '/../models/RiverVideo.php';
 
-class RiverController {
-    private PDO $db;
-
-    public function __construct() {
-        $this->db = Database::getInstance()->getConn();
-    }
+class RiverController extends BaseController {
 
     public function index(array $params): void {
         $lat    = Validator::sanitizeFloat($params['lat']    ?? null);
@@ -35,10 +30,7 @@ class RiverController {
     }
 
     public function show(int $id): void {
-        $river = River::findByIdWithSections($this->db, $id);
-        if (!$river) {
-            Response::error('River not found', 404);
-        }
+        $river = $this->findOrFail(River::findByIdWithSections($this->db, $id), 'River');
         Response::success($river);
     }
 
@@ -60,10 +52,7 @@ class RiverController {
     }
 
     public function getGauge(int $id): void {
-        $river = River::findById($this->db, $id);
-        if (!$river) {
-            Response::error('River not found', 404);
-        }
+        $river = $this->findOrFail(River::findById($this->db, $id), 'River');
 
         $siteId = $river['usgs_site_id'] ?? null;
         if (!$siteId) {
@@ -85,29 +74,20 @@ class RiverController {
     }
 
     public function getHazards(int $id): void {
-        $river = River::findById($this->db, $id);
-        if (!$river) {
-            Response::error('River not found', 404);
-        }
+        $this->findOrFail(River::findById($this->db, $id), 'River');
         $hazards = Hazard::findByRiverId($this->db, $id);
         Response::success($hazards);
     }
 
     public function getRuns(int $id, array $params, ?array $auth): void {
-        $river = River::findById($this->db, $id);
-        if (!$river) {
-            Response::error('River not found', 404);
-        }
+        $this->findOrFail(River::findById($this->db, $id), 'River');
         $limit = min((int) ($params['limit'] ?? 20), 50);
         $runs  = RunLog::findByRiverId($this->db, $id, $limit);
         Response::success($runs);
     }
 
     public function getFeed(int $id, ?array $auth, array $params = []): void {
-        $river = River::findById($this->db, $id);
-        if (!$river) {
-            Response::error('River not found', 404);
-        }
+        $this->findOrFail(River::findById($this->db, $id), 'River');
 
         $scope  = Validator::sanitizeString($params['scope'] ?? '');
         $userId = $auth['user_id'] ?? null;
@@ -176,10 +156,7 @@ class RiverController {
     }
 
     public function getVideos(int $id, array $params): void {
-        $river = River::findById($this->db, $id);
-        if (!$river) {
-            Response::error('River not found', 404);
-        }
+        $this->findOrFail(River::findById($this->db, $id), 'River');
 
         $level = Validator::sanitizeFloat($params['level'] ?? null);
         $videos = RiverVideo::findByRiverId($this->db, $id, $level);
@@ -189,10 +166,7 @@ class RiverController {
     // ── Section Endpoints ────────────────────────────────────────────
 
     public function getSections(int $id): void {
-        $river = River::findById($this->db, $id);
-        if (!$river) {
-            Response::error('River not found', 404);
-        }
+        $this->findOrFail(River::findById($this->db, $id), 'River');
         $sections = RiverSection::findByRiverId($this->db, $id);
         Response::success($sections);
     }

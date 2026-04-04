@@ -65,7 +65,6 @@ final class ProfileViewModel: ObservableObject {
 
     func updateDefaultSkills(_ skillIds: [Int]) async throws {
         struct Body: Encodable { let skillIds: [Int] }
-        struct Empty: Codable {}
         _ = try await api.put(
             "/users/me/default-skills",
             body: Body(skillIds: skillIds),
@@ -100,13 +99,11 @@ final class ProfileViewModel: ObservableObject {
     }
 
     func deleteVessel(id: Int) async throws {
-        struct Empty: Codable {}
         _ = try await api.delete("/users/me/vessels/\(id)", responseType: Empty.self)
         vessels.removeAll { $0.id == id }
     }
 
     func setDefaultVessel(id: Int) async throws {
-        struct Empty: Codable {}
         _ = try await api.put("/users/me/vessels/\(id)/default", responseType: Empty.self)
         vessels = vessels.map { vessel in
             Vessel(
@@ -154,7 +151,6 @@ final class ProfileViewModel: ObservableObject {
     }
 
     func removeCrewMember(userId: Int) async throws {
-        struct Empty: Codable {}
         _ = try await api.delete("/users/me/crew/\(userId)", responseType: Empty.self)
         crew.removeAll { $0.id == userId }
     }
@@ -180,7 +176,6 @@ final class ProfileViewModel: ObservableObject {
     }
 
     func removeClub(id: Int) async throws {
-        struct Empty: Codable {}
         _ = try await api.delete("/clubs/\(id)", responseType: Empty.self)
         clubs.removeAll { $0.id == id }
     }

@@ -3,12 +3,7 @@
 
 require_once __DIR__ . '/../models/Message.php';
 
-class MessageController {
-    private PDO $db;
-
-    public function __construct() {
-        $this->db = Database::getInstance()->getConn();
-    }
+class MessageController extends BaseController {
 
     public function getConversations(array $auth): void {
         $conversations = Message::getConversations($this->db, (int) $auth['user_id']);

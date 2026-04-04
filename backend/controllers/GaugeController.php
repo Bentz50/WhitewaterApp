@@ -1,7 +1,7 @@
 <?php
 // Copyright © 2026 BentzTech LLC. All rights reserved.
 
-class GaugeController {
+class GaugeController extends BaseController {
     public function getGauge(string $siteId): void {
         $cached = GaugeProxy::getCached($siteId, 'usgs');
         if ($cached) {

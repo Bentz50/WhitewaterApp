@@ -3,12 +3,7 @@
 
 require_once __DIR__ . '/../models/Hazard.php';
 
-class HazardController {
-    private PDO $db;
-
-    public function __construct() {
-        $this->db = Database::getInstance()->getConn();
-    }
+class HazardController extends BaseController {
 
     public function index(array $params): void {
         $lat    = Validator::sanitizeFloat($params['lat']    ?? null);

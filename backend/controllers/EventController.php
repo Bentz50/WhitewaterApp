@@ -3,12 +3,7 @@
 
 require_once __DIR__ . '/../models/Event.php';
 
-class EventController {
-    private PDO $db;
-
-    public function __construct() {
-        $this->db = Database::getInstance()->getConn();
-    }
+class EventController extends BaseController {
 
     public function index(array $params): void {
         $lat    = Validator::sanitizeFloat($params['lat']    ?? null);

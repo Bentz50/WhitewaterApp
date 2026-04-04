@@ -2,6 +2,9 @@
 // Copyright © 2026 BentzTech LLC. All rights reserved.
 
 class Vessel {
+    use BaseModel;
+    const TABLE = 'vessels';
+
     public static function findByUserId(PDO $db, int $userId): array {
         $stmt = $db->prepare(
             'SELECT * FROM vessels WHERE user_id = :uid ORDER BY is_default DESC, created_at DESC'
@@ -32,24 +35,7 @@ class Vessel {
 
     public static function update(PDO $db, int $id, int $userId, array $data): bool {
         $allowed = ['name', 'type', 'length_ft', 'width_in', 'material', 'color', 'notes'];
-        $sets    = [];
-        $params  = [':id' => $id, ':user_id' => $userId];
-
-        foreach ($allowed as $col) {
-            if (array_key_exists($col, $data)) {
-                $sets[]         = "$col = :$col";
-                $params[":$col"] = $data[$col];
-            }
-        }
-
-        if (empty($sets)) {
-            return false;
-        }
-
-        $sql  = 'UPDATE vessels SET ' . implode(', ', $sets) . ' WHERE id = :id AND user_id = :user_id';
-        $stmt = $db->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->rowCount() > 0;
+        return self::dynamicUpdate($db, $id, $data, $allowed, ['user_id' => $userId]);
     }
 
     public static function delete(PDO $db, int $id, int $userId): bool {
