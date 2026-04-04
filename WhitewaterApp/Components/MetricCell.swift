@@ -6,10 +6,11 @@ import SwiftUI
 struct MetricCell: View {
     let value: String
     let unit: String
+    var valueFont: Font = .title2.bold()
 
     var body: some View {
         VStack(spacing: 2) {
-            Text(value).font(.title2.bold())
+            Text(value).font(valueFont)
             Text(unit).font(.caption2).foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)

@@ -200,11 +200,11 @@ private struct SummaryCard: View {
             Divider()
 
             HStack(spacing: 0) {
-                MetricCell(value: String(format: "%.2f", distanceMiles), unit: "miles")
+                MetricCell(value: String(format: "%.2f", distanceMiles), unit: "miles", valueFont: .title3.bold())
                 Divider().frame(height: 40)
-                MetricCell(value: formattedDuration, unit: "time")
+                MetricCell(value: formattedDuration, unit: "time", valueFont: .title3.bold())
                 Divider().frame(height: 40)
-                MetricCell(value: "\(caloriesBurned)", unit: "cal")
+                MetricCell(value: "\(caloriesBurned)", unit: "cal", valueFont: .title3.bold())
             }
 
             if let start = startGauge {
